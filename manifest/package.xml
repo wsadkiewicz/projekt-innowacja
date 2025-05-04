@@ -18,6 +18,7 @@
         <members>Lead-Lead Layout</members>
         <members>Product2-Product Layout</members>
         <members>Order-Order Layout</members>
+        <members>Adoption-Adoption Layout</members>
         <name>Layout</name>
     </types>
     <types>
