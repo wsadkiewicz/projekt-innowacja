@@ -143,6 +143,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Animal__c.Breed__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Animal__c.Date_of_admission__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -163,12 +168,12 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Animal__c.Photo_Link__c</field>
+        <field>Animal__c.Photo__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>Animal__c.Photo__c</field>
+        <editable>true</editable>
+        <field>Animal__c.Sex__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
