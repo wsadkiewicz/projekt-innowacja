@@ -9,6 +9,7 @@
         <members>Order</members>
         <members>Animal__c</members>
         <members>Adoption__c</members>
+        <members>Shelter__c</members>
         <name>CustomObject</name>
     </types>
     <types>
@@ -18,6 +19,7 @@
         <members>Lead-Lead Layout</members>
         <members>Product2-Product Layout</members>
         <members>Order-Order Layout</members>
+        <members>Adoption-Adoption Layout</members>
         <name>Layout</name>
     </types>
     <types>
