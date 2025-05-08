@@ -3,8 +3,48 @@
     <fullName>Special_needs__c</fullName>
     <externalId>false</externalId>
     <label>Special needs</label>
-    <length>32768</length>
+    <required>false</required>
     <trackTrending>false</trackTrending>
-    <type>LongTextArea</type>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Medical Care</fullName>
+                <default>false</default>
+                <label>Medical Care</label>
+            </value>
+            <value>
+                <fullName>Special Diet</fullName>
+                <default>false</default>
+                <label>Special Diet</label>
+            </value>
+            <value>
+                <fullName>Behavioral Support</fullName>
+                <default>false</default>
+                <label>Behavioral Support</label>
+            </value>
+            <value>
+                <fullName>Emotional Support</fullName>
+                <default>false</default>
+                <label>Emotional Support</label>
+            </value>
+            <value>
+                <fullName>Rehabilitation</fullName>
+                <default>false</default>
+                <label>Rehabilitation</label>
+            </value>
+            <value>
+                <fullName>Mobility Assistance</fullName>
+                <default>false</default>
+                <label>Mobility Assistance</label>
+            </value>
+            <value>
+                <fullName>Isolation or Quarantine</fullName>
+                <default>false</default>
+                <label>Isolation or Quarantine</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
     <visibleLines>3</visibleLines>
 </CustomField>
