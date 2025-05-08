@@ -118,11 +118,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Adoption__c.Amount__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>Adoption__c.Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -159,6 +154,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Animal__c.Photo__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Animal__c.Shelter__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
