@@ -3,67 +3,9 @@
     <fullName>Breed__c</fullName>
     <externalId>false</externalId>
     <label>Breed</label>
-    <required>true</required>
+    <length>255</length>
+    <required>false</required>
     <trackTrending>false</trackTrending>
-    <type>Picklist</type>
-    <valueSet>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>Beagle</fullName>
-                <default>false</default>
-                <label>Beagle</label>
-            </value>
-            <value>
-                <fullName>Bulldog</fullName>
-                <default>false</default>
-                <label>Bulldog</label>
-            </value>
-            <value>
-                <fullName>Chihuahua</fullName>
-                <default>false</default>
-                <label>Chihuahua</label>
-            </value>
-            <value>
-                <fullName>Dachshund</fullName>
-                <default>false</default>
-                <label>Dachshund</label>
-            </value>
-            <value>
-                <fullName>German Shepherd</fullName>
-                <default>false</default>
-                <label>German Shepherd</label>
-            </value>
-            <value>
-                <fullName>Golden Retriever</fullName>
-                <default>false</default>
-                <label>Golden Retriever</label>
-            </value>
-            <value>
-                <fullName>Labrador Retriever</fullName>
-                <default>false</default>
-                <label>Labrador Retriever</label>
-            </value>
-            <value>
-                <fullName>Mixed</fullName>
-                <default>false</default>
-                <label>Mixed</label>
-            </value>
-            <value>
-                <fullName>Poodle</fullName>
-                <default>false</default>
-                <label>Poodle</label>
-            </value>
-            <value>
-                <fullName>Rottweiler</fullName>
-                <default>false</default>
-                <label>Rottweiler</label>
-            </value>
-            <value>
-                <fullName>Siberian Husky</fullName>
-                <default>false</default>
-                <label>Siberian Husky</label>
-            </value>
-        </valueSetDefinition>
-    </valueSet>
+    <type>Text</type>
+    <unique>false</unique>
 </CustomField>

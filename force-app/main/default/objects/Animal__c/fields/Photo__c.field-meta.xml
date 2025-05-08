@@ -2,11 +2,8 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Photo__c</fullName>
     <externalId>false</externalId>
-    <formula>IMAGE( Photo_Link__c , &quot;Animal photo&quot;)</formula>
-    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>Photo</label>
     <required>false</required>
     <trackTrending>false</trackTrending>
-    <type>Text</type>
-    <unique>false</unique>
+    <type>Url</type>
 </CustomField>
