@@ -695,6 +695,14 @@
         <layout>Account-Account Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
+        <layout>Adoption__c-Real Adoption Layout</layout>
+        <recordType>Adoption__c.Real</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Adoption__c-Virtual AdoptionLayout</layout>
+        <recordType>Adoption__c.Virtual</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>Case-Case Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
