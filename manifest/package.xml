@@ -41,5 +41,24 @@
         <members>Shelter__c</members>
         <name>CustomTab</name>
     </types>
+    <types>
+        <members>Adoption__c.Adoption_Compact_Layout</members>
+        <members>Animal__c.Animal_Compact_Layout</members>
+        <members>Shelter__c.Shelter_Compact_Layout</members>
+        <name>CompactLayout</name>
+    </types>
+    <types>
+        <members>shelterdogiStock503190955</members>
+        <name>ContentAsset</name>
+    </types>
+    <types>
+        <members>Adoption_Record_Page_Real</members>
+        <members>Adoption_Record_Page_Virtual</members>
+        <members>Adoptions_Home</members>
+        <members>Ai_Mals_UtilityBar</members>
+        <members>Animal_Record_Page</members>
+        <members>Shelter_Record_Page</members>
+        <name>FlexiPage</name>
+    </types>
     <version>56.0</version>
 </Package>
