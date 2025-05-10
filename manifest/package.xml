@@ -35,5 +35,11 @@
         <members>AiMals</members>
         <name>CustomApplication</name>
     </types>
+    <types>
+        <members>Adoption__c</members>
+        <members>Animal__c</members>
+        <members>Shelter__c</members>
+        <name>CustomTab</name>
+    </types>
     <version>56.0</version>
 </Package>
