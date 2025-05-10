@@ -31,5 +31,9 @@
         <members>Adding_points_for_adoption</members>    
         <name>ApexTrigger</name>
     </types>
+    <types>
+        <members>AiMals</members>
+        <name>CustomApplication</name>
+    </types>
     <version>56.0</version>
 </Package>
