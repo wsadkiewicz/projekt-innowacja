@@ -1,5 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Adding_points_for_adoption</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>Adoption__c.Adoption_Compact_Layout</members>
+        <members>Animal__c.Animal_Compact_Layout</members>
+        <members>Shelter__c.Shelter_Compact_Layout</members>
+        <name>CompactLayout</name>
+    </types>
+    <types>
+        <members>shelterdogiStock503190955</members>
+        <name>ContentAsset</name>
+    </types>
+    <types>
+        <members>AiMals</members>
+        <name>CustomApplication</name>
+    </types>
     <types>
         <members>Account</members>
         <members>Case</members>
@@ -13,52 +31,53 @@
         <name>CustomObject</name>
     </types>
     <types>
-        <members>Account-Account Layout</members>
-        <members>Case-Case Layout</members>
-        <members>Contact-Contact Layout</members>
-        <members>Lead-Lead Layout</members>
-        <members>Product2-Product Layout</members>
-        <members>Order-Order Layout</members>
-        <members>Adoption__c-Real Adoption Layout</members>
-        <members>Adoption__c-Virtual AdoptionLayout</members>
-        <name>Layout</name>
-    </types>
-    <types>
-        <members>Admin</members>
-        <name>Profile</name>
-    </types>
-     <types>
-        <members>Adding_points_for_adoption</members>    
-        <name>ApexTrigger</name>
-    </types>
-    <types>
-        <members>AiMals</members>
-        <name>CustomApplication</name>
-    </types>
-    <types>
         <members>Adoption__c</members>
         <members>Animal__c</members>
         <members>Shelter__c</members>
         <name>CustomTab</name>
     </types>
     <types>
-        <members>Adoption__c.Adoption_Compact_Layout</members>
-        <members>Animal__c.Animal_Compact_Layout</members>
-        <members>Shelter__c.Shelter_Compact_Layout</members>
-        <name>CompactLayout</name>
-    </types>
-    <types>
-        <members>shelterdogiStock503190955</members>
-        <name>ContentAsset</name>
+        <members>CompanyDashboards/AdoptionDashboard</members>
+        <name>Dashboard</name>
     </types>
     <types>
         <members>Adoption_Record_Page_Real</members>
         <members>Adoption_Record_Page_Virtual</members>
-        <members>Adoptions_Home</members>
         <members>Ai_Mals_UtilityBar</members>
         <members>Animal_Record_Page</members>
         <members>Shelter_Record_Page</members>
         <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>Account-Account Layout</members>
+        <members>Adoption__c-Adoption Layout</members>
+        <members>Adoption__c-Real Adoption Layout</members>
+        <members>Adoption__c-Virtual AdoptionLayout</members>
+        <members>Animal__c-Animal Layout</members>
+        <members>Case-Case Layout</members>
+        <members>Shelter__c-Shelter Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Admin</members>
+        <name>Profile</name>
+    </types>
+    <types>
+        <members>Account.Business_Accounts</members>
+        <members>Adoption__c.Real</members>
+        <members>Adoption__c.Virtual</members>
+        <name>RecordType</name>
+    </types>
+    <types>
+        <members>Adoption_Record_Page_Real</members>
+        <members>Adoption_Record_Page_Virtual</members>
+        <members>Animal_Record_Page</members>
+        <members>Shelter_Record_Page</members>
+        <name>UiViewDefinition</name>
+    </types>
+    <types>
+        <members>Adoption__c.Amount_Validation</members>
+        <name>ValidationRule</name>
     </types>
     <version>56.0</version>
 </Package>
