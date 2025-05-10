@@ -724,6 +724,9 @@
         <recordType>Account.Business_Accounts</recordType>
     </layoutAssignments>
     <layoutAssignments>
+        <layout>Adoption__c-Adoption Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>Adoption__c-Real Adoption Layout</layout>
         <recordType>Adoption__c.Real</recordType>
     </layoutAssignments>
@@ -732,19 +735,13 @@
         <recordType>Adoption__c.Virtual</recordType>
     </layoutAssignments>
     <layoutAssignments>
+        <layout>Animal__c-Animal Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>Case-Case Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>Contact-Contact Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Lead-Lead Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Order-Order Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>Product2-Product Layout</layout>
+        <layout>Shelter__c-Shelter Layout</layout>
     </layoutAssignments>
     <objectPermissions>
         <allowCreate>true</allowCreate>
