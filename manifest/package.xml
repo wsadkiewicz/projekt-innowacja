@@ -27,5 +27,9 @@
         <members>Admin</members>
         <name>Profile</name>
     </types>
+     <types>
+        <members>Adding_points_for_adoption</members>    
+        <name>ApexTrigger</name>
+    </types>
     <version>56.0</version>
 </Package>
