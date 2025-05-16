@@ -21,10 +21,6 @@
     <types>
         <members>Account</members>
         <members>Case</members>
-        <members>Contact</members>
-        <members>Lead</members>
-        <members>Product2</members>
-        <members>Order</members>
         <members>Animal__c</members>
         <members>Adoption__c</members>
         <members>Shelter__c</members>
@@ -35,10 +31,6 @@
         <members>Animal__c</members>
         <members>Shelter__c</members>
         <name>CustomTab</name>
-    </types>
-    <types>
-        <members>CompanyDashboards/AdoptionDashboard</members>
-        <name>Dashboard</name>
     </types>
     <types>
         <members>Adoption_Record_Page_Real</members>
