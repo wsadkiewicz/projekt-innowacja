@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Status__c</fullName>
+    <defaultValue>&quot;In progress&quot;</defaultValue>
     <externalId>false</externalId>
     <label>Status</label>
     <required>false</required>
@@ -12,7 +13,7 @@
             <sorted>false</sorted>
             <value>
                 <fullName>In progress</fullName>
-                <default>false</default>
+                <default>true</default>
                 <label>In progress</label>
             </value>
             <value>

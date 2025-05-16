@@ -4,7 +4,7 @@ trigger Adding_points_for_adoption on Adoption__c (before insert){
     Id realId = Schema.SObjectType.Adoption__c.getRecordTypeInfosByName().get('Real').getRecordTypeId();
 
     for (Adoption__c a : Trigger.new) {
-        if (a.Account__c == null) continue;
+
 
         Integer points = 0;
         if (a.RecordTypeId == virtualId) {
@@ -15,8 +15,15 @@ trigger Adding_points_for_adoption on Adoption__c (before insert){
 
         if (points > 0) {
             Account acc = [SELECT Id, Points__c FROM Account WHERE Id = :a.Account__c];
-            acc.Points__c = (acc.Points__c == null ? 0 : acc.Points__c) + points;
+            acc.Points__c = (acc.Points__c ?? 0) + points;
             update acc;
         }
     }
+    //aktualizowanie poza forem
+    //wyciagnac query poza petle
+    //sprawdza czy realna adopcja jest done
+    //updetowac wartosci zamist insertu
+    //after insert
+    //points defult 0, nie sprawdzac wartosci
+    //linie 10-14 uproscic do jednej
 }
