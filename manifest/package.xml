@@ -7,7 +7,7 @@
     </types>
     <types>
         <members>AdoptionEmailManager</members>
-    <name>ApexClass</name>
+        <name>ApexClass</name>
     </types>
     <types>
         <members>Adoption__c.Adoption_Compact_Layout</members>
