@@ -2,7 +2,12 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>Adding_points_for_adoption</members>
+        <members>AdoptionStatusChangeTrigger</members>
         <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>AdoptionEmailManager</members>
+    <name>ApexClass</name>
     </types>
     <types>
         <members>Adoption__c.Adoption_Compact_Layout</members>
