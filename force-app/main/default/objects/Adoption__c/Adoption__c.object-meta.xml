@@ -155,8 +155,9 @@
     <externalSharingModel>ControlledByParent</externalSharingModel>
     <label>Adoption</label>
     <nameField>
+        <displayFormat>{0}</displayFormat>
         <label>Adoption Name</label>
-        <type>Text</type>
+        <type>AutoNumber</type>
     </nameField>
     <pluralLabel>Adoptions</pluralLabel>
     <searchLayouts></searchLayouts>
