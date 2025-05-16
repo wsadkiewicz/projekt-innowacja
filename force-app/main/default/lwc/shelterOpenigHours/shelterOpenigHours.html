@@ -1,0 +1,72 @@
+<template>
+    <lightning-card title="Opening Hours" icon-name="standard:event">
+        <div class="slds-m-around_medium">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+            </template>
+            <template if:false={isLoading}>
+                <template if:true={hasData}>
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Day">Day</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Open">Open</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Close">Close</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Status">Status</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={displayHours} for:item="hour">
+                                <tr key={hour.Id} class="slds-hint-parent">
+                                    <td data-label="Day">
+                                        <div class="slds-truncate" title={hour.Day__c}>{hour.Day__c}</div>
+                                    </td>
+                                    <td data-label="Open">
+                                        <template if:false={hour.Closed__c}>
+                                            <div class="slds-truncate" title={hour.displayOpen}>{hour.displayOpen}</div>
+                                        </template>
+                                    </td>
+                                    <td data-label="Close">
+                                        <template if:false={hour.Closed__c}>
+                                            <div class="slds-truncate" title={hour.displayClose}>{hour.displayClose}</div>
+                                        </template>
+                                    </td>
+                                    <td data-label="Status">
+                                        <template if:true={hour.Closed__c}>
+                                            <span class="slds-badge slds-theme_error">Closed</span>
+                                            <template if:true={hour.Additional_Info__c}>
+                                                <div class="slds-text-body_small slds-m-top_xx-small">{hour.Additional_Info__c}</div>
+                                            </template>
+                                        </template>
+                                        <template if:false={hour.Closed__c}>
+                                            <span class="slds-badge slds-theme_success">Open</span>
+                                        </template>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </template>
+
+                <template if:true={showNoDataMessage}>
+                    <p>No opening hours defined for this shelter.</p>
+                </template>
+
+                <template if:true={userFriendlyError}>
+                    <div class="slds-text-color_error">
+                        <p>{userFriendlyError}</p>
+                        <p>Please try again later or contact your administrator.</p>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>
