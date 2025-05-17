@@ -23,10 +23,3 @@ trigger Adding_points_for_adoption on Adoption__c (after insert){
     }
     update accsToUpdate;
 }
-    //aktualizowanie poza forem
-    //wyciagnac query poza petle
-    //sprawdza czy realna adopcja jest done
-    //updetowac wartosci zamist insertu
-    //after insert
-    //points defult 0, nie sprawdzac wartosci
-    //linie 10-14 uproscic do jednej
