@@ -7,6 +7,7 @@
     </types>
     <types>
         <members>AdoptionEmailManager</members>
+        <members>ShelterOpeningHoursController</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -29,12 +30,14 @@
         <members>Animal__c</members>
         <members>Adoption__c</members>
         <members>Shelter__c</members>
+        <members>Opening_Hours__c</members>
         <name>CustomObject</name>
     </types>
     <types>
         <members>Adoption__c</members>
         <members>Animal__c</members>
         <members>Shelter__c</members>
+        <members>Opening_Hours__c</members>
         <name>CustomTab</name>
     </types>
     <types>

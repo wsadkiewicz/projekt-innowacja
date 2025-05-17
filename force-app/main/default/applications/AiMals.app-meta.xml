@@ -54,6 +54,7 @@
     <tabs>Animal__c</tabs>
     <tabs>Shelter__c</tabs>
     <tabs>standard-Account</tabs>
+    <tabs>Opening_Hours__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>Ai_Mals_UtilityBar</utilityBar>
 </CustomApplication>
