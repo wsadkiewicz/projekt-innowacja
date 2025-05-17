@@ -1,24 +1,28 @@
-trigger Adding_points_for_adoption on Adoption__c (before insert){
-
-    Id virtualId = Schema.SObjectType.Adoption__c.getRecordTypeInfosByName().get('Virtual').getRecordTypeId();
+trigger Adding_points_for_adoption on Adoption__c (after insert){
     Id realId = Schema.SObjectType.Adoption__c.getRecordTypeInfosByName().get('Real').getRecordTypeId();
+    
+    List<Account> accsToUpdate = new List<Account>();
+    List<Account> accounts = new List<Account>();
+    Map<Id, Integer> pointsToAdd = new Map<id, Integer>();
 
-    for (Adoption__c a : Trigger.new) {
-
-
-        Integer points = 0;
-        if (a.RecordTypeId == virtualId) {
-            points = 10;
-        } else if (a.RecordTypeId == realId) {
-            points = 20;
-        }
-
-        if (points > 0) {
-            Account acc = [SELECT Id, Points__c FROM Account WHERE Id = :a.Account__c];
-            acc.Points__c = (acc.Points__c ?? 0) + points;
-            update acc;
+    for(Adoption__c adopt : Trigger.new){
+        if(adopt.Status__c == 'Approved'){
+        Id accountId = adopt.Account__c;
+        Integer newPoints = (adopt.RecordTypeId == realId) ? 20 : 10;
+        Integer currPoints = pointsToAdd.containsKey(accountId) ? pointsToAdd.get(accountId) : 0;
+        pointsToAdd.put(accountId, currPoints + newPoints);
         }
     }
+    
+    accounts = [SELECT Id, Points__c FROM Account WHERE Id IN :pointsToAdd.keySet()];
+
+    for (Account acc : accounts) {
+        Integer pointsToAddNow = pointsToAdd.get(acc.Id);
+        acc.Points__c = (acc.Points__c == null ? 0 : acc.Points__c) + pointsToAddNow;
+        accsToUpdate.add(acc);
+    }
+    update accsToUpdate;
+}
     //aktualizowanie poza forem
     //wyciagnac query poza petle
     //sprawdza czy realna adopcja jest done
@@ -26,4 +30,3 @@ trigger Adding_points_for_adoption on Adoption__c (before insert){
     //after insert
     //points defult 0, nie sprawdzac wartosci
     //linie 10-14 uproscic do jednej
-}

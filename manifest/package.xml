@@ -24,7 +24,7 @@
         <name>CustomApplication</name>
     </types>
     <types>
-        <members>Account</members>
+        <members>PersonAccount</members>
         <members>Case</members>
         <members>Animal__c</members>
         <members>Adoption__c</members>
@@ -46,7 +46,7 @@
         <name>FlexiPage</name>
     </types>
     <types>
-        <members>Account-Account Layout</members>
+        <members>PersonAccount-Person Account Layout</members>
         <members>Adoption__c-Adoption Layout</members>
         <members>Adoption__c-Real Adoption Layout</members>
         <members>Adoption__c-Virtual AdoptionLayout</members>
