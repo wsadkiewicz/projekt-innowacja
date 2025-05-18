@@ -1,0 +1,43 @@
+name: Deploy to integrated Sandbox
+
+on:
+  push:
+    branches:
+      - development
+    paths:
+      - 'force-app/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Install Salesforce CLI
+        run: npm install sfdx-cli --global
+
+      - name: Install git delta plugin
+        run: echo y | sfdx plugins:install sfdx-git-delta
+
+      - name: 'Populate auth file with SFDX_URL secret of integration org'
+        shell: bash
+        run: |
+          echo ${{ secrets.SFDX_AUTH_URL}} > ./SFDX_AUTH_URL.txt
+
+      - name: 'Authenticate to Integration Org'
+        run: sfdx auth:sfdxurl:store -f ./SFDX_AUTH_URL.txt -s -a integration
+
+      - name: Generate delta package
+        run: |
+          mkdir changed-sources
+          sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources --generate-delta --source force-app/
+
+      - name: Deploy only delta to Integration org
+        run: |
+          if [ -d "changed-sources/force-app" ]; then
+            sfdx force:source:deploy -p changed-sources/force-app -u integration --testlevel RunLocalTests --json
+
