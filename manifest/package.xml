@@ -46,6 +46,7 @@
         <members>Ai_Mals_UtilityBar</members>
         <members>Animal_Record_Page</members>
         <members>Shelter_Record_Page</members>
+        <members>Opening_Hours_Record_Page</members>
         <name>FlexiPage</name>
     </types>
     <types>
