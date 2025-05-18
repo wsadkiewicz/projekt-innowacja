@@ -20,6 +20,10 @@
                 <behavior>Edit</behavior>
                 <field>Address__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Number_Of_Adoptions__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns/>
         <style>TwoColumnsTopToBottom</style>

@@ -75,6 +75,12 @@
                 <identifier>RecordCapacity_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.Number_Of_Adoptions__c</fieldItem>
+                <identifier>RecordNumber_Of_Adoptions__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-6d7b547d-36b6-40ce-a587-a5a49548ec15</name>
         <type>Facet</type>
     </flexiPageRegions>

@@ -3,10 +3,12 @@
     <types>
         <members>Adding_points_for_adoption</members>
         <members>AdoptionStatusChangeTrigger</members>
+        <members>AdoptionUpdateTrigger</members>
         <name>ApexTrigger</name>
     </types>
     <types>
         <members>AdoptionEmailManager</members>
+        <members>CountigAdoptionHandler</members>
         <name>ApexClass</name>
     </types>
     <types>
