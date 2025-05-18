@@ -23,3 +23,4 @@ trigger Adding_points_for_adoption on Adoption__c (after insert){
     }
     update accsToUpdate;
 }
+// test
