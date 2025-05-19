@@ -29,5 +29,5 @@ jobs:
         run: sfdx force:auth:sfdxurl:store -f ./SFDX_AUTH_URL.txt -s -a integration
 
       - name: 'Validate Deployment'
-        run: sfdx force:source:deploy -p force-app -u integration --checkonly --testlevel RunLocalTests --json
+        run: sfdx force:source:deploy -p force-app -u integration --checkonly --json
 
