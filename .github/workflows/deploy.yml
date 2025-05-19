@@ -1,7 +1,7 @@
 name: Deploy to integrated Sandbox
 
 on:
-  pull_request:
+  push:
     branches:
       - development
     paths:
@@ -28,6 +28,6 @@ jobs:
       - name: 'Authenticate to Integration Org'
         run: sfdx force:auth:sfdxurl:store -f ./SFDX_AUTH_URL.txt -s -a integration
 
-      - name: 'Validate Deployment'
-        run: sfdx force:source:deploy -p force-app -u integration --checkonly --json
+      - name: 'Deploy to Integration org'
+        run: sfdx force:source:deploy -p force-app -u integration --json
 
