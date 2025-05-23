@@ -58,6 +58,7 @@
         <members>Animal__c-Animal Layout</members>
         <members>Case-Case Layout</members>
         <members>Shelter__c-Shelter Layout</members>
+        <members>Opening_Hours__c-Opening Hours Layout</members>
         <name>Layout</name>
     </types>
     <types>
