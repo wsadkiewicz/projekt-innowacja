@@ -397,6 +397,10 @@
         <recordType>Account.Business_Accounts</recordType>
     </layoutAssignments>
     <layoutAssignments>
+        <layout>Account-Account Layout</layout>
+        <recordType>Account.Bussiness</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>Adoption__c-Adoption Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
@@ -412,6 +416,9 @@
     </layoutAssignments>
     <layoutAssignments>
         <layout>Case-Case Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Opening_Hours__c-Opening Hours Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Shelter__c-Shelter Layout</layout>
@@ -474,6 +481,12 @@
         <default>false</default>
         <recordType>Account.Business_Accounts</recordType>
         <visible>false</visible>
+    </recordTypeVisibilities>
+    <recordTypeVisibilities>
+        <default>false</default>
+        <personAccountDefault>true</personAccountDefault>
+        <recordType>Account.Bussiness</recordType>
+        <visible>true</visible>
     </recordTypeVisibilities>
     <recordTypeVisibilities>
         <default>false</default>
