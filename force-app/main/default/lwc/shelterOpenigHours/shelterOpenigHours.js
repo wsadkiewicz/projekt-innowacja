@@ -138,6 +138,8 @@ export default class ShelterOpeningHours extends LightningElement {
 
         const displayFieldKey = field === 'Open__c' ? 'displayOpen' : 'displayClose';
         hourEntry[displayFieldKey] = value;
+        
+        hourEntry[field] = this.timeToMilliseconds(value);
     }
 
     handleToggleClosed(event) {
