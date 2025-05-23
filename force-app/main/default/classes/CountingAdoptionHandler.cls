@@ -1,4 +1,4 @@
-public class CountigAdoptionHandler {
+public class CountingAdoptionHandler {
 	
     public static void updateAdoptions(List<Adoption__c> Adoptions){
         
