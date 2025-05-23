@@ -1,0 +1,17 @@
+<template>
+    <div class="slds-card slds-p-around_small">
+         <div class="slds-m-bottom_small">
+            <span class="slds-section__title slds-p-around_x-small slds-theme_shade">
+                Other Shelters in City
+            </span>
+        </div>
+        <div>
+            <lightning-map 
+                map-markers={mapMarkers}
+                zoom-level={zoomLevel}
+                list-view={listView}
+            >
+            </lightning-map>
+        </div>
+    </div>
+</template>
