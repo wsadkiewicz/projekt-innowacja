@@ -356,6 +356,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Opening_Hours__c.Additional_Info__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Opening_Hours__c.Close__c</field>
         <readable>true</readable>
     </fieldPermissions>

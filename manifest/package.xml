@@ -3,6 +3,7 @@
     <types>
         <members>Adding_points_for_adoption</members>
         <members>AdoptionStatusChangeTrigger</members>
+        <members>ShelterOpeningHoursTrigger</members>
         <name>ApexTrigger</name>
     </types>
     <types>
