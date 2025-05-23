@@ -75,6 +75,16 @@
                 <identifier>RecordCapacity_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Number_Of_Adoptions__c</fieldItem>
+                <identifier>RecordNumber_Of_Adoptions_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-6d7b547d-36b6-40ce-a587-a5a49548ec15</name>
         <type>Facet</type>
     </flexiPageRegions>
