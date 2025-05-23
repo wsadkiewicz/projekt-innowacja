@@ -397,10 +397,6 @@
         <recordType>Account.Business_Accounts</recordType>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>Account-Account Layout</layout>
-        <recordType>Account.Bussiness</recordType>
-    </layoutAssignments>
-    <layoutAssignments>
         <layout>Adoption__c-Adoption Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
@@ -481,12 +477,6 @@
         <default>false</default>
         <recordType>Account.Business_Accounts</recordType>
         <visible>false</visible>
-    </recordTypeVisibilities>
-    <recordTypeVisibilities>
-        <default>false</default>
-        <personAccountDefault>true</personAccountDefault>
-        <recordType>Account.Bussiness</recordType>
-        <visible>true</visible>
     </recordTypeVisibilities>
     <recordTypeVisibilities>
         <default>false</default>
