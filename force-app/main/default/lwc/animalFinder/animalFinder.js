@@ -1,4 +1,4 @@
-import { LightningElement, wire, track } from 'lwc';
+import { LightningElement, wire } from 'lwc';
 import getAnimals from '@salesforce/apex/AnimalFinderController.getAnimals';
 import getShelters from '@salesforce/apex/AnimalFinderController.getShelters';
 import getBreeds from '@salesforce/apex/AnimalFinderController.getBreeds';
