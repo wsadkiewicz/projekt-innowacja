@@ -1,6 +1,6 @@
 public class CountingAdoption{
 	
-    public static void updateAdoptions(List<Adoption__c> Adoptions){
+    public static void updateAdoptions(List<Adoption__c> Adoptions, Boolean isDelete){
         
         Set<Id> animalsId = new Set<Id>();
         
@@ -9,26 +9,27 @@ public class CountingAdoption{
         }
         
         
-        Map<Id, Id> shelterMap = new Map<Id, Id>();
+        Map<Id, Shelter__c> shelterMap = new Map<Id, Shelter__c>();
 
-        for(Animal__c a : [Select Id, Shelter__c from Animal__c where Animal__c.Id in : animalsId]){
-        	shelterMap.put(a.Id, a.Shelter__c);    
-        }
+			for (Animal__c a : [SELECT Id, Shelter__c, Shelter__r.Name, Shelter__r.Number_of_Adoptions__c
+                    FROM Animal__c 
+                    WHERE Id IN :animalsId AND Shelter__c != null]) {
+    			shelterMap.put(a.Id, a.Shelter__r); 
+}
+
         
-        Map<Id, Integer> shelterAdoptionCounts = new Map<Id, Integer>();
-        //pozbyc sie shelterId
-        //wywalic if z nullem- odfiltrowac to w query
-        //jezeli approved to ma zliczac
-        //dodac do triggera after delete zeby zmiesjzczac ilosc apodpcji
+        Map<Id, double> shelterAdoptionCounts = new Map<Id, double>();
+
         for(Adoption__c a : Adoptions){
-            Id shelterId = shelterMap.get(a.Animal__c);
-            if(shelterId != null){
-                if(!shelterAdoptionCounts.containsKey(shelterId)){
-                    shelterAdoptionCounts.put(shelterId, 1);
-                } else {
-                    shelterAdoptionCounts.put(shelterId, shelterAdoptionCounts.get(shelterId) + 1);
-                }
+            if(a.Status__c == 'Approved'){
+            Shelter__c s = shelterMap.get(a.Animal__c);
+            if(isDelete == true){
+              shelterAdoptionCounts.put(s.Id, s.Number_of_Adoptions__c - 1);
+            }else{
+                shelterAdoptionCounts.put(s.Id, s.Number_of_Adoptions__c + 1);
             }
+         
+        	}
         }
         
         List<Shelter__c> sheltersToUpdate = new List<Shelter__c>();
