@@ -1,4 +1,20 @@
 public class MissingAnimalsService {
+
+    public class MissingAnimal {
+        @AuraEnabled public String id;
+        @AuraEnabled public String missingDate;
+        @AuraEnabled public String name;
+        @AuraEnabled public String imageUrl;
+        
+        public MissingAnimal() {}
+        
+        public MissingAnimal(String id, String missingDate, String name, String imageUrl) {
+            this.id = id;
+            this.missingDate = missingDate;
+            this.name = name;
+            this.imageUrl = imageUrl;
+        }
+    }
     
     @AuraEnabled(cacheable=true)
     public static List<MissingAnimal> getMissingAnimals(Integer dayDelta) {
@@ -67,17 +83,38 @@ public class MissingAnimalsService {
         }
     }
 
+    public class AnimalDetails {
+        @AuraEnabled public String name;
+        @AuraEnabled public String imageUrl;
+        @AuraEnabled public String breed;
+        @AuraEnabled public Integer age;
+        @AuraEnabled public String uniqueFeatures;
+        @AuraEnabled public String size;
+    }
+
+    public class MissingAnimalReport {
+        @AuraEnabled public String address;
+        @AuraEnabled public Decimal disappearancePlaceLongitude;
+        @AuraEnabled public Decimal disappearancePlaceLatitude;
+        @AuraEnabled public String disappearanceDate;
+        @AuraEnabled public String description;
+    }
+
+
+    public class MissingAnimalWrapper {
+        @AuraEnabled public MissingAnimalReport report;
+        @AuraEnabled public AnimalDetails animal;
+    }
+
   	@AuraEnabled
     public static Boolean createMissingAnimalReport(MissingAnimalWrapper missingAnimalWrapper) {
         String token = MissingAnimalsAuthService.getAccessToken();
         
         if (token == null) {
-            System.debug('Null token');
             return false;
         }
         
         if (missingAnimalWrapper?.report == null) {
-            System.debug('Missing animal report is null');
             return false;
         }
         
@@ -87,15 +124,12 @@ public class MissingAnimalsService {
                                 report.disappearancePlaceLatitude != null);
         
         if (!hasAddress && !hasCoordinates) {
-            System.debug('Missing address or coordinates');
             return false;
         }
         if (String.isBlank(report.disappearanceDate)) {
-            System.debug('Missing disappearance date');
             return false;
         }
         if (String.isBlank(report.description)) {
-            System.debug('Missing description');
             return false;
         }
         
@@ -106,8 +140,6 @@ public class MissingAnimalsService {
             Map<String, Object> requestBody = new Map<String, Object>();
             requestBody.put('missingAnimalWrapper', missingAnimalWrapper);
             String jsonBody = JSON.serialize(requestBody);
-            
-            System.debug('request body: ' + jsonBody);
             
             HttpRequest request = new HttpRequest();
             request.setEndpoint(apiEndpoint);
@@ -120,18 +152,12 @@ public class MissingAnimalsService {
             Http http = new Http();
             HttpResponse response = http.send(request);
             
-            System.debug('Response status: ' + response.getStatusCode());
-            System.debug('Response body ' + response.getBody());
-            
             if (response.getStatusCode() == 201) {
-                System.debug('Animal created successfully');
                 return true;
             } else {
-                System.debug('Error code: ' + response.getStatusCode());
                 return false;
             }
         } catch (Exception e) {
-            System.debug('exception: ' + e.getMessage());
             return false;
         }
     }
@@ -141,7 +167,6 @@ public class MissingAnimalsService {
         String token = MissingAnimalsAuthService.getAccessToken();
         
         if (token == null) {
-            System.debug('Token is null');
             return false;
         }
         
@@ -154,8 +179,6 @@ public class MissingAnimalsService {
             requestBody.put('found', found);
             String jsonBody = JSON.serialize(requestBody);
             
-            System.debug('REQUEST BODY: ' + jsonBody);
-            
             HttpRequest request = new HttpRequest();
             request.setEndpoint(apiEndpoint);
             request.setMethod('PUT');
@@ -167,18 +190,12 @@ public class MissingAnimalsService {
             Http http = new Http();
             HttpResponse response = http.send(request);
             
-            System.debug('response status: ' + response.getStatusCode());
-            System.debug('response body: ' + response.getBody());
-            
             if (response.getStatusCode() == 200) {
-                System.debug('Animal status updated successfully');
                 return true;
             } else {
-                System.debug('Error code: ' + response.getStatusCode());
                 return false;
             }
         } catch (Exception e) {
-            System.debug('exception: ' + e.getMessage());
             return false;
         }
     }
