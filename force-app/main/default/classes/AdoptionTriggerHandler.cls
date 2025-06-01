@@ -8,6 +8,7 @@ public with sharing class AdoptionTriggerHandler {
         CountingAdoption.updateAdoptions(Adoptions, false);
         CountingPoints.updatePoints(Adoptions);
         CountingUnadoptedAnimals.CountingUnadoptedAnimals(Adoptions);
+        AdoptionEmailManager.sendAdoptionStatusEmails(Adoptions, new Map<Id, Adoption__c>());
     }
     public void handleAfterDelete(List<Adoption__c> Adoptions){
         CountingAdoption.updateAdoptions(Adoptions, true);
