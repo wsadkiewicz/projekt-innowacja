@@ -5,139 +5,247 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class ShelterOpeningHours extends LightningElement {
     @api recordId;
-    @track hours = [];
+    @track displayHours = [];
+    @track error;
+    isLoading = true;
     isEditing = false;
-    
-    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    static DAYS_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    static DEFAULT_TIMES = { open: '09:00', close: '17:00' };
+    static TIME_REGEX = /^\d{2}:\d{2}$/;
 
     connectedCallback() {
-        this.initHours();
+        this.initializeDisplayHours();
     }
 
-    initHours() {
-        this.hours = this.days.map(day => ({
-            day,
-            open: '09:00',
-            close: '17:00',
-            closed: false,
-            info: '',
-            get displayTime() {
-                return this.closed ? 'Closed' : `${this.open} - ${this.close}`;
-            },
-            get status() {
-                return this.closed ? 'Closed' : 'Open';
-            },
-            get badgeClass() {
-                return `slds-badge ${this.closed ? 'slds-theme_error' : 'slds-theme_success'}`;
-            }
-        }));
+    initializeDisplayHours() {
+        this.displayHours = ShelterOpeningHours.DAYS_ORDER.map(day => 
+            this.createDayData(day, null, false)
+        );
     }
 
-    @wire(getOpeningHours, { shelterId: '$recordId' })
-    wiredHours({ data }) {
-        if (data) {
-            const hourMap = new Map(data.map(h => [h.Day__c, h]));
-            this.hours = this.days.map(day => {
-                const saved = hourMap.get(day);
-                if (saved) {
-                    return {
-                        day,
-                        id: saved.Id,
-                        open: saved.Closed__c ? '' : this.formatTime(saved.Open__c),
-                        close: saved.Closed__c ? '' : this.formatTime(saved.Close__c),
-                        closed: saved.Closed__c,
-                        info: saved.Additional_Info__c || '',
-                        get displayTime() {
-                            return this.closed ? 'Closed' : `${this.open} - ${this.close}`;
-                        },
-                        get status() {
-                            return this.closed ? 'Closed' : 'Open';
-                        },
-                        get badgeClass() {
-                            return `slds-badge ${this.closed ? 'slds-theme_error' : 'slds-theme_success'}`;
-                        }
-                    };
-                }
-                return {
-                    day,
-                    open: '09:00',
-                    close: '17:00',
-                    closed: false,
-                    info: '',
-                    get displayTime() {
-                        return this.closed ? 'Closed' : `${this.open} - ${this.close}`;
-                    },
-                    get status() {
-                        return this.closed ? 'Closed' : 'Open';
-                    },
-                    get badgeClass() {
-                        return `slds-badge ${this.closed ? 'slds-theme_error' : 'slds-theme_success'}`;
-                    }
-                };
+    createDayData(day, existingHour = null, closed = false) {
+        const { open: defaultOpen, close: defaultClose } = ShelterOpeningHours.DEFAULT_TIMES;
+        
+        if (existingHour) {
+            return this.addDynamicProperties({
+                ...existingHour,
+                displayOpen: this.formatTime(existingHour.Open__c, existingHour.Closed__c),
+                displayClose: this.formatTime(existingHour.Close__c, existingHour.Closed__c)
             });
         }
+
+        return this.addDynamicProperties({
+            Id: null,
+            Day__c: day,
+            Open__c: closed ? null : this.timeToMilliseconds(defaultOpen),
+            Close__c: closed ? null : this.timeToMilliseconds(defaultClose),
+            Closed__c: closed,
+            Additional_Info__c: '',
+            displayOpen: closed ? '' : defaultOpen,
+            displayClose: closed ? '' : defaultClose
+        });
     }
 
-    formatTime(ms) {
-        if (!ms) return '';
-        const d = new Date(ms);
-        return `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
+    addDynamicProperties(hourData) {
+        return {
+            ...hourData,
+            get toggleLabel() { 
+                return this.Closed__c ? 'Mark as Open' : 'Mark as Closed'; 
+            },
+            get statusBadgeText() { 
+                return this.Closed__c ? 'Closed' : 'Open'; 
+            },
+            get statusBadgeClass() { 
+                return `slds-badge ${this.Closed__c ? 'slds-theme_error' : 'slds-theme_success'}`; 
+            }
+        };
     }
 
-    timeToMs(time) {
-        if (!time) return null;
-        const [h, m] = time.split(':').map(Number);
-        return new Date(0).setUTCHours(h, m, 0, 0);
-    }
+    originalHoursData = null;
 
-    handleChange(e) {
-        const { day, field } = e.target.dataset;
-        const hour = this.hours.find(h => h.day === day);
-        if (hour) {
-            hour[field] = e.target.value;
+    @wire(getOpeningHours, { shelterId: '$recordId' })
+    wiredHours({ data, error }) {
+        if (data) {
+            this.originalHoursData = data; 
+            this.processHoursData(data);
+            this.error = undefined;
+        } else if (error) {
+            this.handleError(error);
+            this.initializeDisplayHours();
         }
+        this.isLoading = false;
     }
 
-    toggleClosed(e) {
-        const hour = this.hours.find(h => h.day === e.target.dataset.day);
-        hour.closed = e.target.checked;
-        hour.open = hour.closed ? '' : '09:00';
-        hour.close = hour.closed ? '' : '17:00';
+    processHoursData(data) {
+        const hoursMap = new Map(data.map(hour => [hour.Day__c, hour]));
+        
+        this.displayHours = ShelterOpeningHours.DAYS_ORDER.map(dayName => {
+            const existingHour = hoursMap.get(dayName);
+            return this.createDayData(dayName, existingHour);
+        });
     }
 
-    toggleEdit() {
-        if (this.isEditing) {
-            this.saveData();
-        } else {
-            this.isEditing = true;
+    handleError(error) {
+        this.error = error;
+        console.error('Error fetching opening hours:', error);
+    }
+
+    formatTime(timeValue, isClosed) {
+        if (isClosed || timeValue == null) return '';
+                if (typeof timeValue === 'string' && ShelterOpeningHours.TIME_REGEX.test(timeValue)) {
+            return timeValue;
         }
-    }
 
-    async saveData() {
         try {
-            const toSave = this.hours.map(h => ({
-                Id: h.id,
-                Day__c: h.day,
-                Open__c: h.closed ? null : this.timeToMs(h.open),  
-                Close__c: h.closed ? null : this.timeToMs(h.close), 
-                Closed__c: h.closed,
-                Shelter__c: this.recordId,
-                Additional_Info__c: h.info
-            }));
+            const milliseconds = parseInt(timeValue, 10);
+            if (isNaN(milliseconds)) return '';
             
-            await saveOpeningHours({ openingHoursList: toSave, shelterId: this.recordId });
-            this.showToast('Success', 'Saved!', 'success');
-            this.isEditing = false;
-        } catch (error) {
-            this.showToast('Error', error.body?.message || 'Save failed', 'error');
+            const date = new Date(milliseconds);
+            return `${date.getUTCHours().toString().padStart(2, '0')}:${date.getUTCMinutes().toString().padStart(2, '0')}`;
+        } catch (e) {
+            console.error('Error formatting time:', timeValue, e);
+            return '';
         }
+    }
+
+    timeToMilliseconds(timeString) {
+        if (!timeString) return null;
+        
+        try {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            if (isNaN(hours) || isNaN(minutes)) return null;
+            
+            const date = new Date(0);
+            date.setUTCHours(hours, minutes, 0, 0);
+            return date.getTime();
+        } catch (e) {
+            console.error('Error converting time to milliseconds:', timeString, e);
+            return null;
+        }
+    }
+
+    findHourEntry(day) {
+        return this.displayHours.find(h => h.Day__c === day);
+    }
+
+    handleTimeChange(event) {
+        const { day, field } = event.target.dataset;
+        const value = event.target.value;
+        
+        const hourEntry = this.findHourEntry(day);
+        if (!hourEntry) return;
+
+        const displayFieldKey = field === 'Open__c' ? 'displayOpen' : 'displayClose';
+        hourEntry[displayFieldKey] = value;
+        
+        hourEntry[field] = this.timeToMilliseconds(value);
+    }
+
+    handleToggleClosed(event) {
+        const day = event.target.dataset.day;
+        const hourEntry = this.findHourEntry(day);
+        if (!hourEntry) return;
+
+        hourEntry.Closed__c = !hourEntry.Closed__c;
+        
+        if (hourEntry.Closed__c) {
+            this.setClosedState(hourEntry);
+        } else {
+            this.setOpenState(hourEntry);
+        }
+    }
+
+    setClosedState(hourEntry) {
+        hourEntry.displayOpen = '';
+        hourEntry.displayClose = '';
+        hourEntry.Open__c = null;
+        hourEntry.Close__c = null;
+    }
+
+    setOpenState(hourEntry) {
+        const { open: defaultOpen, close: defaultClose } = ShelterOpeningHours.DEFAULT_TIMES;
+        hourEntry.displayOpen = defaultOpen;
+        hourEntry.displayClose = defaultClose;
+        hourEntry.Open__c = this.timeToMilliseconds(defaultOpen);
+        hourEntry.Close__c = this.timeToMilliseconds(defaultClose);
+    }
+
+    handleAdditionalInfoChange(event) {
+        const day = event.target.dataset.day;
+        const hourEntry = this.findHourEntry(day);
+        if (hourEntry) {
+            hourEntry.Additional_Info__c = event.target.value;
+        }
+    }
+
+    handleEdit() {
+        this.isEditing = true;
+    }
+
+    handleCancel() {
+        this.isEditing = false;
+        if (this.originalHoursData) {
+            this.processHoursData(this.originalHoursData);
+        } else {
+            this.initializeDisplayHours();
+        }
+        this.isLoading = false;
+        this.error = undefined;
+    }
+
+    async handleSave() {
+        this.isLoading = true;
+
+        try {
+            const hoursToSave = this.prepareDataForSave();
+            await saveOpeningHours({ 
+                openingHoursList: hoursToSave, 
+                shelterId: this.recordId 
+            });
+            
+            this.showToast('Success', 'Opening hours saved successfully.', 'success');
+            this.isEditing = false;
+
+            this.originalHoursData = hoursToSave;
+            this.processHoursData(hoursToSave);
+        } catch (error) {
+            this.showToast(
+                'Error saving opening hours',
+                error.body?.message || error.message,
+                'error'
+            );
+            this.error = error;
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    prepareDataForSave() {
+        return this.displayHours.map(hour => {
+            const baseData = {
+                Day__c: hour.Day__c,
+                Open__c: hour.Closed__c ? null : hour.Open__c,
+                Close__c: hour.Closed__c ? null : hour.Close__c,
+                Closed__c: hour.Closed__c,
+                Additional_Info__c: hour.Additional_Info__c
+            };
+
+            if (hour.Id) {
+                baseData.Id = hour.Id;
+            } else {
+                baseData.Shelter__c = this.recordId;
+            }
+            
+            return baseData;
+        });
     }
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }
 
-    get editButtonLabel() {
-        return this.isEditing ? 'Save' : 'Edit';
+    get hasData() {
+        return this.displayHours?.length > 0;
     }
 }

@@ -1,82 +1,138 @@
 <template>
     <lightning-card title="Opening Hours" icon-name="standard:event">
         <div slot="actions">
-            <lightning-button 
-                label={editButtonLabel} 
-                onclick={toggleEdit}>
-            </lightning-button>
+            <template if:false={isEditing}>
+                <lightning-button label="Edit" onclick={handleEdit} disabled={isLoading}></lightning-button>
+            </template>
+            <template if:true={isEditing}>
+                <lightning-button label="Save" variant="brand" onclick={handleSave} class="slds-m-left_x-small"></lightning-button>
+                <lightning-button label="Cancel" onclick={handleCancel} class="slds-m-left_x-small"></lightning-button>
+            </template>
         </div>
 
         <div class="slds-m-around_medium">
-            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
-                <thead>
-                    <tr>
-                        <th>Day</th>
-                        <th>Hours</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template for:each={hours} for:item="hour">
-                        <tr key={hour.day}>
-                            <td>{hour.day}</td>
-                            <td>
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+            </template>
+
+            <template if:false={isLoading}>
+                <template if:true={hasData}>
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Day">Day</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Open">Open</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Close">Close</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Status">Status</div>
+                                </th>
                                 <template if:true={isEditing}>
-                                    <lightning-input
-                                        type="time"
-                                        value={hour.open}
-                                        data-day={hour.day}
-                                        data-field="open"
-                                        onchange={handleChange}
-                                        disabled={hour.closed}>
-                                    </lightning-input>
-                                    -
-                                    <lightning-input
-                                        type="time"
-                                        value={hour.close}
-                                        data-day={hour.day}
-                                        data-field="close"
-                                        onchange={handleChange}
-                                        disabled={hour.closed}>
-                                    </lightning-input>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Additional Info">Additional Info</div>
+                                    </th>
                                 </template>
-                                <template if:false={isEditing}>
-                                    {hour.displayTime}
-                                </template>
-                            </td>
-                            <td>
-                                <template if:true={isEditing}>
-                                    <lightning-input
-                                        type="checkbox"
-                                        label="Closed"
-                                        checked={hour.closed}
-                                        data-day={hour.day}
-                                        onchange={toggleClosed}>
-                                    </lightning-input>
-                                </template>
-                                <template if:false={isEditing}>
-                                    <span class={hour.badgeClass}>{hour.status}</span>
-                                    <template if:true={hour.info}>
-                                        <span class="slds-m-left_small slds-text-body_small slds-text-color_weak">{hour.info}</span>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={displayHours} for:item="hour">
+                                <tr key={hour.Day__c} class="slds-hint-parent">
+                                    <td data-label="Day">
+                                        <div class="slds-truncate" title={hour.Day__c}>{hour.Day__c}</div>
+                                    </td>
+                                    <td data-label="Open">
+                                        <template if:true={isEditing}>
+                                            <lightning-input
+                                                type="time"
+                                                name="openTime"
+                                                data-day={hour.Day__c}
+                                                data-field="Open__c"
+                                                value={hour.displayOpen}
+                                                onchange={handleTimeChange}
+                                                disabled={hour.Closed__c}
+                                                step="900"> </lightning-input>
+                                        </template>
+                                        <template if:false={isEditing}>
+                                            <template if:false={hour.Closed__c}>
+                                                <div class="slds-truncate" title={hour.displayOpen}>{hour.displayOpen}</div>
+                                            </template>
+                                        </template>
+                                    </td>
+                                    <td data-label="Close">
+                                        <template if:true={isEditing}>
+                                            <lightning-input
+                                                type="time"
+                                                name="closeTime"
+                                                data-day={hour.Day__c}
+                                                data-field="Close__c"
+                                                value={hour.displayClose}
+                                                onchange={handleTimeChange}
+                                                disabled={hour.Closed__c}
+                                                step="900"> </lightning-input>
+                                        </template>
+                                        <template if:false={isEditing}>
+                                            <template if:false={hour.Closed__c}>
+                                                <div class="slds-truncate" title={hour.displayClose}>{hour.displayClose}</div>
+                                            </template>
+                                        </template>
+                                    </td>
+                                    <td data-label="Status">
+                                        <template if:false={isEditing}>
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-wrap"> <div class="slds-col_bump-right slds-p-right_xx-small"> <template if:true={hour.Closed__c}>
+                                                        <span class="slds-badge slds-theme_error">Closed</span>
+                                                    </template>
+                                                    <template if:false={hour.Closed__c}>
+                                                        <span class="slds-badge slds-theme_success">Open</span>
+                                                    </template>
+                                                </div>
+                                                <template if:true={hour.Additional_Info__c}>
+                                                     <div class="slds-col slds-grid slds-grid_vertical-align-center"> <lightning-icon
+                                                            icon-name="utility:info_alt"
+                                                            size="x-small"
+                                                            variant="bare"
+                                                            class="slds-m-right_xx-small">
+                                                        </lightning-icon>
+                                                        <span class="slds-text-body_small slds-text-color_weak">{hour.Additional_Info__c}</span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        <template if:true={isEditing}>
+                                            <lightning-button
+                                                label={hour.toggleLabel}
+                                                title={hour.toggleLabel}
+                                                data-day={hour.Day__c}
+                                                onclick={handleToggleClosed}
+                                                variant="neutral"
+                                                class="slds-m-right_x-small">
+                                            </lightning-button>
+                                            <span class={hour.statusBadgeClass}>{hour.statusBadgeText}</span>
+                                        </template>
+                                    </td>
+                                    <template if:true={isEditing}>
+                                        <td data-label="Additional Info">
+                                            <lightning-textarea
+                                                value={hour.Additional_Info__c}
+                                                data-day={hour.Day__c}
+                                                onchange={handleAdditionalInfoChange}
+                                                placeholder="Optional notes or exceptions">
+                                            </lightning-textarea>
+                                        </td>
                                     </template>
-                                </template>
-                            </td>
-                            <template if:true={isEditing}>
-                                <td>
-                                    <lightning-input
-                                        type="text"
-                                        value={hour.info}
-                                        data-day={hour.day}
-                                        data-field="info"
-                                        onchange={handleChange}
-                                        placeholder="Optional notes">
-                                    </lightning-input>
-                                </td>
+                                </tr>
                             </template>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </template>
+                <template if:false={hasData}>
+                    <p>No opening hours configured for this shelter.</p>
+                </template>
+            </template>
         </div>
     </lightning-card>
 </template>
