@@ -9,6 +9,9 @@
     <types>
         <members>AdoptionEmailManager</members>
         <members>ShelterOpeningHoursController</members>
+        <members>MissingAnimalsService</members>
+        <members>MissingAnimalsAuthService</members>
+        <members>MissingAnimal</members>
         <name>ApexClass</name>
     </types>
     <types>
