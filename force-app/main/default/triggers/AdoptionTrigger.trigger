@@ -6,7 +6,7 @@ trigger AdoptionTrigger on Adoption__c (after insert, after update, after delete
             handler.handleAfterInsert(Trigger.new);
         }
         if(Trigger.isUpdate){
-            handler.handleAfterUpdate(Trigger.new);
+            handler.handleAfterUpdate(Trigger.new, (Map<Id, Adoption__c>) Trigger.oldMap);
         }
         if(Trigger.isDelete){
             handler.handleAfterDelete(Trigger.old);

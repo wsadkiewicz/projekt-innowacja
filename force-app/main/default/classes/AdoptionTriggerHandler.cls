@@ -4,11 +4,11 @@ public with sharing class AdoptionTriggerHandler {
         CountingPoints.updatePoints(Adoptions);
         CountingUnadoptedAnimals.CountingUnadoptedAnimals(Adoptions);
     }
-    public void handleAfterUpdate(List<Adoption__c> Adoptions){
+    public void handleAfterUpdate(List<Adoption__c> Adoptions, Map<Id, Adoption__c> oldMap){
         CountingAdoption.updateAdoptions(Adoptions, false);
         CountingPoints.updatePoints(Adoptions);
         CountingUnadoptedAnimals.CountingUnadoptedAnimals(Adoptions);
-        AdoptionEmailManager.sendAdoptionStatusEmails(Adoptions, new Map<Id, Adoption__c>());
+        AdoptionEmailManager.sendAdoptionStatusEmails(adoptions, oldMap);
     }
     public void handleAfterDelete(List<Adoption__c> Adoptions){
         CountingAdoption.updateAdoptions(Adoptions, true);

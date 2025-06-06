@@ -3,8 +3,6 @@ public class AdoptionEmailManager {
     private static final String EMAIL_TEMPLATE_NAME = 'ChangeAdoptionStatus';
     
     public static void sendAdoptionStatusEmails(List<Adoption__c> newList, Map<Id, Adoption__c> oldMap) {
-        System.debug('sendAdoptionStatusEmails started. Records to process: ' + newList.size());
-
         Set<Id> changedAdoptionIds = new Set<Id>();
         for (Adoption__c newAdoption : newList) {
             Adoption__c oldAdoption = oldMap.get(newAdoption.Id);
@@ -14,20 +12,17 @@ public class AdoptionEmailManager {
         }
 
         if (changedAdoptionIds.isEmpty()) {
-            System.debug('No adoptions with status changes found.');
             return;
         }
 
         EmailTemplate template;
         try {
             template = [SELECT Id, Subject, HtmlValue, Body FROM EmailTemplate WHERE Name = :EMAIL_TEMPLATE_NAME LIMIT 1];
-            System.debug('Email template found: ' + template.Id);
         } catch (Exception e) {
-            System.debug('Error: Email template not found. ' + e.getMessage());
             return;
         }
 
-        Map<Id, Adoption__c> adoptionWithDataMap = new Map<Id, Adoption__c>([
+        Map<Id, Adoption__c> adoptionDataMap = new Map<Id, Adoption__c>([
             SELECT Id, Status__c, Account__c,
                    Animal__r.Name,
                    Account__r.PersonContactId,
@@ -40,47 +35,33 @@ public class AdoptionEmailManager {
         ]);
 
         List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
-        for (Adoption__c newAdoption : newList) {
-            Adoption__c oldAdoption = oldMap.get(newAdoption.Id);
 
-            if (newAdoption.Status__c != oldAdoption.Status__c && 
-                newAdoption.Account__c != null && 
-                adoptionWithDataMap.containsKey(newAdoption.Id)) {
+        for (Id adoptionId : adoptionDataMap.keySet()) {
+            Adoption__c adoptionWithData = adoptionDataMap.get(adoptionId);
+            
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            mail.setTargetObjectId(adoptionWithData.Account__r.PersonContactId);
 
-                Adoption__c adoptionWithData = adoptionWithDataMap.get(newAdoption.Id);
-                
-                Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-                mail.setTargetObjectId(adoptionWithData.Account__r.PersonContactId);
+            String templateBody = template.HtmlValue != null ? template.HtmlValue : template.Body;
+            String customBody = modifyEmail(templateBody, adoptionWithData, adoptionWithData.Account__r.PersonContact);
 
-                String templateBody = template.HtmlValue != null ? template.HtmlValue : template.Body;
-                String customBody = modifyEmail(templateBody, adoptionWithData, adoptionWithData.Account__r.PersonContact);
-
-                mail.setSubject(template.Subject);
-                if (template.HtmlValue != null) {
-                    mail.setHtmlBody(customBody);
-                } else {
-                    mail.setPlainTextBody(customBody);
-                }
-
-                emails.add(mail);
-                    
-        		//System.debug('Subject: ' + template.Subject);
-        		//System.debug('Body: ' + customBody);
+            mail.setSubject(template.Subject);
+            if (template.HtmlValue != null) {
+                mail.setHtmlBody(customBody);
+            } else {
+                mail.setPlainTextBody(customBody);
             }
+
+            emails.add(mail);
         }
 
         if (!emails.isEmpty()) {
             try {
                 Messaging.sendEmail(emails);
-                System.debug('Emails sent successfully: ' + emails.size());
             } catch (Exception e) {
                 System.debug('Error sending emails: ' + e.getMessage());
             }
-        } else {
-            System.debug('No emails to send.');
-        }
-
-        System.debug('sendAdoptionStatusEmails finished.');
+        } 
     }
     
     private static String modifyEmail(String originalBody, Adoption__c adoption, Contact contact) {
