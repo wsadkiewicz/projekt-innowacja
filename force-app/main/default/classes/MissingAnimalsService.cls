@@ -106,31 +106,41 @@ public class MissingAnimalsService {
         @AuraEnabled public AnimalDetails animal;
     }
 
-  	@AuraEnabled
-    public static Boolean createMissingAnimalReport(MissingAnimalWrapper missingAnimalWrapper) {
+  	private static final String SUCCESS = 'Success';
+    private static final String ERROR_AUTH = 'Null token';
+    private static final String ERROR_MISSING_DATA = 'Missing data';
+    private static final String ERROR_MISSING_LOCATION = 'Missing location';
+    private static final String ERROR_MISSING_DATE = 'Missing date';
+    private static final String ERROR_MISSING_DESCRIPTION = 'Missing description';
+    private static final String ERROR_API = 'Api error';
+    private static final String ERROR_EXCEPTION = 'Exception error';
+
+    @AuraEnabled
+    public static String createMissingAnimalReport(MissingAnimalWrapper missingAnimalWrapper) {
         String token = MissingAnimalsAuthService.getAccessToken();
         
         if (token == null) {
-            return false;
+            return ERROR_AUTH;
         }
         
         if (missingAnimalWrapper?.report == null) {
-            return false;
+            return ERROR_MISSING_DATA;
         }
         
         MissingAnimalReport report = missingAnimalWrapper.report;
+        
         Boolean hasAddress = String.isNotBlank(report.address);
         Boolean hasCoordinates = (report.disappearancePlaceLongitude != null && 
                                 report.disappearancePlaceLatitude != null);
         
         if (!hasAddress && !hasCoordinates) {
-            return false;
+            return ERROR_MISSING_LOCATION;
         }
         if (String.isBlank(report.disappearanceDate)) {
-            return false;
+            return ERROR_MISSING_DATE;
         }
         if (String.isBlank(report.description)) {
-            return false;
+            return ERROR_MISSING_DESCRIPTION;
         }
         
         try {
@@ -153,21 +163,25 @@ public class MissingAnimalsService {
             HttpResponse response = http.send(request);
             
             if (response.getStatusCode() == 201) {
-                return true;
+                return SUCCESS;
             } else {
-                return false;
+                return ERROR_API + '_' + response.getStatusCode();
             }
         } catch (Exception e) {
-            return false;
+            return ERROR_EXCEPTION;
         }
     }
 
     @AuraEnabled
-    public static Boolean updateAnimalFoundStatus(String animalId, Boolean found) {
+    public static String updateAnimalFoundStatus(String animalId, Boolean found) {
+        if (String.isBlank(animalId)) {
+            return ERROR_MISSING_DATA;
+        }
+        
         String token = MissingAnimalsAuthService.getAccessToken();
         
         if (token == null) {
-            return false;
+            return ERROR_AUTH;
         }
         
         try {
@@ -191,12 +205,12 @@ public class MissingAnimalsService {
             HttpResponse response = http.send(request);
             
             if (response.getStatusCode() == 200) {
-                return true;
+                return SUCCESS;
             } else {
-                return false;
+                return ERROR_API + '_' + response.getStatusCode();
             }
         } catch (Exception e) {
-            return false;
+            return ERROR_EXCEPTION;
         }
     }
 }
