@@ -21,15 +21,9 @@ export default class ShelterOpeningHours extends LightningElement {
             close: '17:00',
             closed: false,
             info: '',
-            get displayTime() {
-                return this.closed ? 'Closed' : `${this.open} - ${this.close}`;
-            },
-            get status() {
-                return this.closed ? 'Closed' : 'Open';
-            },
-            get badgeClass() {
-                return `slds-badge ${this.closed ? 'slds-theme_error' : 'slds-theme_success'}`;
-            }
+            displayTime: '09:00 - 17:00',
+            status: 'Open',
+            badgeClass: 'slds-badge slds-theme_success'
         }));
     }
 
@@ -40,39 +34,32 @@ export default class ShelterOpeningHours extends LightningElement {
             this.hours = this.days.map(day => {
                 const saved = hourMap.get(day);
                 if (saved) {
+                    const closed = saved.Closed__c;
+                    const open = closed ? '' : this.formatTime(saved.Open__c);
+                    const close = closed ? '' : this.formatTime(saved.Close__c);
+                    
                     return {
                         day,
                         id: saved.Id,
-                        open: saved.Closed__c ? '' : this.formatTime(saved.Open__c),
-                        close: saved.Closed__c ? '' : this.formatTime(saved.Close__c),
-                        closed: saved.Closed__c,
+                        open,
+                        close,
+                        closed,
                         info: saved.Additional_Info__c || '',
-                        get displayTime() {
-                            return this.closed ? 'Closed' : `${this.open} - ${this.close}`;
-                        },
-                        get status() {
-                            return this.closed ? 'Closed' : 'Open';
-                        },
-                        get badgeClass() {
-                            return `slds-badge ${this.closed ? 'slds-theme_error' : 'slds-theme_success'}`;
-                        }
+                        displayTime: closed ? 'Closed' : `${open} - ${close}`,
+                        status: closed ? 'Closed' : 'Open',
+                        badgeClass: `slds-badge ${closed ? 'slds-theme_error' : 'slds-theme_success'}`
                     };
                 }
+                
                 return {
                     day,
                     open: '09:00',
                     close: '17:00',
                     closed: false,
                     info: '',
-                    get displayTime() {
-                        return this.closed ? 'Closed' : `${this.open} - ${this.close}`;
-                    },
-                    get status() {
-                        return this.closed ? 'Closed' : 'Open';
-                    },
-                    get badgeClass() {
-                        return `slds-badge ${this.closed ? 'slds-theme_error' : 'slds-theme_success'}`;
-                    }
+                    displayTime: '09:00 - 17:00',
+                    status: 'Open',
+                    badgeClass: 'slds-badge slds-theme_success'
                 };
             });
         }
