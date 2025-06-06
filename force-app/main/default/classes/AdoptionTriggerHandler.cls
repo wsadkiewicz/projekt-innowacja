@@ -5,7 +5,7 @@ public with sharing class AdoptionTriggerHandler {
         CountingUnadoptedAnimals.CountingUnadoptedAnimals(Adoptions);
     }
     public void handleAfterUpdate(List<Adoption__c> Adoptions, Map<Id, Adoption__c> oldMap){
-        //CountingAdoption.updateAdoptions(Adoptions, false);
+        CountingAdoption.updateAdoptions(Adoptions, false);
         CountingPoints.updatePoints(Adoptions);
         CountingUnadoptedAnimals.CountingUnadoptedAnimals(Adoptions);
         AdoptionEmailManager.sendAdoptionStatusEmails(adoptions, oldMap);
