@@ -3,6 +3,15 @@ import getOpeningHours from '@salesforce/apex/ShelterOpeningHoursController.getO
 import saveOpeningHours from '@salesforce/apex/ShelterOpeningHoursController.saveOpeningHours';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
+
+const DEFAULT_OPEN_TIME = '09:00';
+const DEFAULT_CLOSE_TIME = '17:00';
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const BADGE_CLASSES = {
+    OPEN: 'slds-badge slds-theme_success',
+    CLOSED: 'slds-badge slds-theme_error'
+};
+
 export default class ShelterOpeningHours extends LightningElement {
     @api recordId;
     @track hours = [];
@@ -15,52 +24,43 @@ export default class ShelterOpeningHours extends LightningElement {
     }
 
     initHours() {
-        this.hours = this.days.map(day => ({
+        this.hours = DAYS.map(day => this.createHourObject(day));
+    }
+
+    createHourObject(day, savedData = null) {
+        if (savedData) {
+            return {
+                day,
+                id: savedData.Id,
+                open: savedData.Closed__c ? '' : this.formatTime(savedData.Open__c),
+                close: savedData.Closed__c ? '' : this.formatTime(savedData.Close__c),
+                closed: savedData.Closed__c,
+                info: savedData.Additional_Info__c || '',
+                displayTime: savedData.Closed__c ? 'Closed' : `${this.formatTime(savedData.Open__c)} - ${this.formatTime(savedData.Close__c)}`,
+                status: savedData.Closed__c ? 'Closed' : 'Open',
+                badgeClass: savedData.Closed__c ? BADGE_CLASSES.CLOSED : BADGE_CLASSES.OPEN
+            };
+        }
+        
+        return {
             day,
-            open: '09:00',
-            close: '17:00',
+            open: DEFAULT_OPEN_TIME,
+            close: DEFAULT_CLOSE_TIME,
             closed: false,
             info: '',
-            displayTime: '09:00 - 17:00',
+            displayTime: `${DEFAULT_OPEN_TIME} - ${DEFAULT_CLOSE_TIME}`,
             status: 'Open',
-            badgeClass: 'slds-badge slds-theme_success'
-        }));
+            badgeClass: BADGE_CLASSES.OPEN
+        };
     }
 
     @wire(getOpeningHours, { shelterId: '$recordId' })
     wiredHours({ data }) {
         if (data) {
             const hourMap = new Map(data.map(h => [h.Day__c, h]));
-            this.hours = this.days.map(day => {
+            this.hours = DAYS.map(day => {
                 const saved = hourMap.get(day);
-                if (saved) {
-                    const closed = saved.Closed__c;
-                    const open = closed ? '' : this.formatTime(saved.Open__c);
-                    const close = closed ? '' : this.formatTime(saved.Close__c);
-                    
-                    return {
-                        day,
-                        id: saved.Id,
-                        open,
-                        close,
-                        closed,
-                        info: saved.Additional_Info__c || '',
-                        displayTime: closed ? 'Closed' : `${open} - ${close}`,
-                        status: closed ? 'Closed' : 'Open',
-                        badgeClass: `slds-badge ${closed ? 'slds-theme_error' : 'slds-theme_success'}`
-                    };
-                }
-                
-                return {
-                    day,
-                    open: '09:00',
-                    close: '17:00',
-                    closed: false,
-                    info: '',
-                    displayTime: '09:00 - 17:00',
-                    status: 'Open',
-                    badgeClass: 'slds-badge slds-theme_success'
-                };
+                return saved ? this.createHourObject(day, saved) : this.createHourObject(day);
             });
         }
     }
@@ -79,45 +79,93 @@ export default class ShelterOpeningHours extends LightningElement {
 
     handleChange(e) {
         const { day, field } = e.target.dataset;
+        const value = e.target.value;
+        
+        this.updateHourField(day, field, value);
+    }
+
+    updateHourField(day, field, value) {
         const hour = this.hours.find(h => h.day === day);
         if (hour) {
-            hour[field] = e.target.value;
+            hour[field] = value;
+            this.updateDisplayProperties(hour);
+        }
+    }
+
+    updateDisplayProperties(hour) {
+        if (hour.closed) {
+            hour.displayTime = 'Closed';
+            hour.status = 'Closed';
+            hour.badgeClass = BADGE_CLASSES.CLOSED;
+        } else {
+            hour.displayTime = `${hour.open} - ${hour.close}`;
+            hour.status = 'Open';
+            hour.badgeClass = BADGE_CLASSES.OPEN;
         }
     }
 
     toggleClosed(e) {
         const hour = this.hours.find(h => h.day === e.target.dataset.day);
-        hour.closed = e.target.checked;
-        hour.open = hour.closed ? '' : '09:00';
-        hour.close = hour.closed ? '' : '17:00';
+        const isClosed = e.target.checked;
+        
+        this.setClosedStatus(hour, isClosed);
+    }
+
+    setClosedStatus(hour, isClosed) {
+        hour.closed = isClosed;
+        
+        if (isClosed) {
+            hour.open = '';
+            hour.close = '';
+        } else {
+            hour.open = DEFAULT_OPEN_TIME;
+            hour.close = DEFAULT_CLOSE_TIME;
+        }
+        
+        this.updateDisplayProperties(hour);
     }
 
     toggleEdit() {
         if (this.isEditing) {
             this.saveData();
         } else {
-            this.isEditing = true;
+            this.startEditing();
         }
+    }
+
+    startEditing() {
+        this.isEditing = true;
     }
 
     async saveData() {
         try {
-            const toSave = this.hours.map(h => ({
-                Id: h.id,
-                Day__c: h.day,
-                Open__c: h.closed ? null : this.timeToMs(h.open),  
-                Close__c: h.closed ? null : this.timeToMs(h.close), 
-                Closed__c: h.closed,
-                Shelter__c: this.recordId,
-                Additional_Info__c: h.info
-            }));
-            
+            const toSave = this.prepareDataForSave();
             await saveOpeningHours({ openingHoursList: toSave, shelterId: this.recordId });
-            this.showToast('Success', 'Saved!', 'success');
-            this.isEditing = false;
+            this.handleSaveSuccess();
         } catch (error) {
-            this.showToast('Error', error.body?.message || 'Save failed', 'error');
+            this.handleSaveError(error);
         }
+    }
+
+    prepareDataForSave() {
+        return this.hours.map(h => ({
+            Id: h.id,
+            Day__c: h.day,
+            Open__c: h.closed ? null : this.timeToMs(h.open),  
+            Close__c: h.closed ? null : this.timeToMs(h.close),
+            Closed__c: h.closed,
+            Shelter__c: this.recordId,
+            Additional_Info__c: h.info
+        }));
+    }
+
+    handleSaveSuccess() {
+        this.showToast('Success', 'Saved!', 'success');
+        this.isEditing = false;
+    }
+
+    handleSaveError(error) {
+        this.showToast('Error', error.body?.message || 'Save failed', 'error');
     }
 
     showToast(title, message, variant) {
