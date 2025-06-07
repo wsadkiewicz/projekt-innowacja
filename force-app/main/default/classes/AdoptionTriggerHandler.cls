@@ -3,7 +3,7 @@ public with sharing class AdoptionTriggerHandler extends TriggerHandler{
     public override void afterInsert(List<SObject> newList) {
         List<Adoption__c> adoptions = (List<Adoption__c>) newList;
         updatePoints(adoptions);
-        updateAdoptions(adoptions, false);
+        updateAdoptions(adoptions, false, null);
         CountingUnadoptedAnimals.CountingUnadoptedAnimals(adoptions);
     }
 
@@ -11,14 +11,14 @@ public with sharing class AdoptionTriggerHandler extends TriggerHandler{
         List<Adoption__c> adoptions = (List<Adoption__c>) newList;
         Map<Id, Adoption__c> typedOldMap = (Map<Id, Adoption__c>) oldMap;
         updatePoints(adoptions);
-        updateAdoptions(adoptions, false);
+        updateAdoptions(adoptions, false, typedOldMap);
         CountingUnadoptedAnimals.CountingUnadoptedAnimals(adoptions);
         sendAdoptionStatusEmails(adoptions, typedOldMap);
     }
 
     public override void afterDelete(List<SObject> oldList) {
         List<Adoption__c> adoptions = (List<Adoption__c>) oldList;
-        updateAdoptions(adoptions, true);
+        updateAdoptions(adoptions, true, null);
         CountingUnadoptedAnimals.CountingUnadoptedAnimals(adoptions);
     }
 
@@ -49,47 +49,52 @@ public with sharing class AdoptionTriggerHandler extends TriggerHandler{
     update accsToUpdate;
     }
 
-    public static void updateAdoptions(List<Adoption__c> Adoptions, Boolean isDelete){
-        
-        Set<Id> animalsId = new Set<Id>();
-        
-        for(Adoption__c a : Adoptions){
-            animalsId.add(a.Animal__c);
-        }
-        
-        
-        Map<Id, Shelter__c> shelterMap = new Map<Id, Shelter__c>();
+    public static void updateAdoptions(List<Adoption__c> Adoptions, Boolean isDelete, Map<Id, Adoption__c> oldMap) {
+    Set<Id> animalsId = new Set<Id>();
+    for (Adoption__c a : Adoptions) {
+        animalsId.add(a.Animal__c);
+    }
 
-			for (Animal__c a : [SELECT Id, Shelter__c, Shelter__r.Name, Shelter__r.Number_of_Adoptions__c
-                    FROM Animal__c 
-                    WHERE Id IN :animalsId AND Shelter__c != null]) {
-    			shelterMap.put(a.Id, a.Shelter__r); 
+    Map<Id, Animal__c> animals = new Map<Id, Animal__c>([
+        SELECT Id, Shelter__c, Shelter__r.Number_of_Adoptions__c
+        FROM Animal__c 
+        WHERE Id IN :animalsId AND Shelter__c != null
+    ]);
+
+    Map<Id, Double> shelterAdoptionCounts = new Map<Id, Double>();
+
+    for (Adoption__c a : Adoptions) {
+        Animal__c animal = animals.get(a.Animal__c);
+        if (animal == null) continue;
+
+        Id shelterId = animal.Shelter__c;
+        Double currentCount = animal.Shelter__r.Number_of_Adoptions__c ?? 0;
+
+        if (isDelete) {
+            if (a.Status__c == 'Approved') {
+                shelterAdoptionCounts.put(shelterId, currentCount - 1);
+            }
+        } else {
+            String oldStatus = oldMap != null && oldMap.containsKey(a.Id) ? oldMap.get(a.Id).Status__c : null;
+            //sprawdza czy został przekazany status czy null. Jezeli status dalej robi dalej get()...
+            if (a.Status__c == 'Approved' && oldStatus != 'Approved') {
+                shelterAdoptionCounts.put(shelterId, currentCount + 1);
+            } else if (a.Status__c != 'Approved' && oldStatus == 'Approved') {
+                shelterAdoptionCounts.put(shelterId, currentCount - 1);
+            }
+        }
+    }
+
+    List<Shelter__c> sheltersToUpdate = new List<Shelter__c>();
+    for (Id shelterId : shelterAdoptionCounts.keySet()) {
+        sheltersToUpdate.add(new Shelter__c(Id = shelterId, Number_of_Adoptions__c = shelterAdoptionCounts.get(shelterId)));
+    }
+
+    if (!sheltersToUpdate.isEmpty()) {
+        update sheltersToUpdate;
+    }
 }
 
-        
-        Map<Id, double> shelterAdoptionCounts = new Map<Id, double>();
-
-        for(Adoption__c a : Adoptions){
-            if(a.Status__c == 'Approved'){
-            Shelter__c s = shelterMap.get(a.Animal__c);
-            if(isDelete == true){
-              shelterAdoptionCounts.put(s.Id, s.Number_of_Adoptions__c - 1);
-            }else{
-                shelterAdoptionCounts.put(s.Id, s.Number_of_Adoptions__c + 1);
-            }
-         
-        	}
-        }
-        
-        List<Shelter__c> sheltersToUpdate = new List<Shelter__c>();
-
-        for(Id shelterId : shelterAdoptionCounts.keySet()){
-            Shelter__c Shelter = new Shelter__c(Id = shelterId, Number_of_Adoptions__c = shelterAdoptionCounts.get(shelterId));
-            sheltersToUpdate.add(Shelter);
-		}
-        
-       update sheltersToUpdate; 
-    }
 
     public static void CountingUnadoptedAnimals(List<Adoption__c> adoptions) {
      Set<Id> animalIds = new Set<Id>();
