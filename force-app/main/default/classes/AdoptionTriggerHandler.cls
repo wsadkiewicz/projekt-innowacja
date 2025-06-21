@@ -4,7 +4,8 @@ public with sharing class AdoptionTriggerHandler extends TriggerHandler{
         List<Adoption__c> adoptions = (List<Adoption__c>) newList;
         updatePoints(adoptions);
         updateAdoptions(adoptions, false, null);
-        CountingUnadoptedAnimals.CountingUnadoptedAnimals(adoptions);
+        CountingUnadoptedAnimals(adoptions, null);
+
     }
 
     public override void afterUpdate(List<SObject> newList, Map<Id, SObject> oldMap) {
@@ -12,14 +13,17 @@ public with sharing class AdoptionTriggerHandler extends TriggerHandler{
         Map<Id, Adoption__c> typedOldMap = (Map<Id, Adoption__c>) oldMap;
         updatePoints(adoptions);
         updateAdoptions(adoptions, false, typedOldMap);
-        CountingUnadoptedAnimals.CountingUnadoptedAnimals(adoptions);
+        CountingUnadoptedAnimals(adoptions, typedOldMap);
         sendAdoptionStatusEmails(adoptions, typedOldMap);
     }
 
     public override void afterDelete(List<SObject> oldList) {
         List<Adoption__c> adoptions = (List<Adoption__c>) oldList;
         updateAdoptions(adoptions, true, null);
-        CountingUnadoptedAnimals.CountingUnadoptedAnimals(adoptions);
+
+        Map<Id, Adoption__c> oldMapForDel = new Map<Id, Adoption__c>();
+        for (Adoption__c a : adoptions) oldMapForDel.put(a.Id, a);
+        CountingUnadoptedAnimals(null, oldMapForDel);
     }
 
 
@@ -75,7 +79,7 @@ public with sharing class AdoptionTriggerHandler extends TriggerHandler{
                 shelterAdoptionCounts.put(shelterId, currentCount - 1);
             }
         } else {
-            String oldStatus = oldMap != null && oldMap.containsKey(a.Id) ? oldMap.get(a.Id).Status__c : null;
+            String oldStatus = oldMap?.get(a.Id)?.Status__c;
             //sprawdza czy został przekazany status czy null. Jezeli status dalej robi dalej get()...
             if (a.Status__c == 'Approved' && oldStatus != 'Approved') {
                 shelterAdoptionCounts.put(shelterId, currentCount + 1);
@@ -84,6 +88,7 @@ public with sharing class AdoptionTriggerHandler extends TriggerHandler{
             }
         }
     }
+//uproscic ifa- sprawdzac tylko czy Status sie zmienil
 
     List<Shelter__c> sheltersToUpdate = new List<Shelter__c>();
     for (Id shelterId : shelterAdoptionCounts.keySet()) {
@@ -93,50 +98,9 @@ public with sharing class AdoptionTriggerHandler extends TriggerHandler{
     if (!sheltersToUpdate.isEmpty()) {
         update sheltersToUpdate;
     }
-}
+}    
 
-
-    public static void CountingUnadoptedAnimals(List<Adoption__c> adoptions) {
-     Set<Id> animalIds = new Set<Id>();
-        
-        for (Adoption__c a : adoptions) {
-            if (a.Animal__c != null) {
-                animalIds.add(a.Animal__c);
-            }
-        }
-
-
-        Map<Id, Animal__c> animals = new Map<Id, Animal__c>(
-            [SELECT Id, Shelter__c FROM Animal__c WHERE Id IN :animalIds]
-        );
-
-        Set<Id> shelterIds = new Set<Id>();
-        for (Animal__c a : animals.values()) {
-            if (a.Shelter__c != null) {
-                shelterIds.add(a.Shelter__c);
-            }
-        }
-
-        List<Shelter__c> sheltersToUpdate = new List<Shelter__c>();
-
-        for (Id shelterId : shelterIds) {
-            List<Animal__c> shelterAnimals = [
-                SELECT Id FROM Animal__c 
-                WHERE Shelter__c = :shelterId
-            ];
-
-            Set<Id> animalIdsInShelter = new Set<Id>();
-            for (Animal__c a : shelterAnimals) animalIdsInShelter.add(a.Id);
-
-            
-        }
-
-        if (!sheltersToUpdate.isEmpty()) {
-            update sheltersToUpdate;
-        }
-    }
-
-        private static final String EMAIL_TEMPLATE_NAME = 'ChangeAdoptionStatus';
+    private static final String EMAIL_TEMPLATE_NAME = 'ChangeAdoptionStatus';
 
     public static void sendAdoptionStatusEmails(List<Adoption__c> newList, Map<Id, Adoption__c> oldMap) {
 
@@ -218,5 +182,90 @@ public with sharing class AdoptionTriggerHandler extends TriggerHandler{
         
         return modifiedBody;
     }
-
+    public static void CountingUnadoptedAnimals(List<Adoption__c> newList, Map<Id, Adoption__c> oldMap) {
+        // 1) zbierz Id wszystkich zwierząt dotkniętych zmianami
+        Set<Id> animalIds = new Set<Id>();
+        if (newList != null) {
+            for (Adoption__c a : newList) {
+                if (a.Animal__c != null) animalIds.add(a.Animal__c);
+            }
+        }
+        if (oldMap != null) {
+            for (Adoption__c a : oldMap.values()) {
+                if (a.Animal__c != null) animalIds.add(a.Animal__c);
+            }
+        }
+        if (animalIds.isEmpty()) {
+            return;
+        }
+        
+        // 2) wyciągnij Id schronisk tych zwierząt
+        Map<Id, Animal__c> animals = new Map<Id, Animal__c>(
+            [SELECT Id, Shelter__c
+             FROM Animal__c
+             WHERE Id IN :animalIds
+               AND Shelter__c != NULL]
+        );
+        Set<Id> shelterIds = new Set<Id>();
+        for (Animal__c a : animals.values()) {
+            shelterIds.add(a.Shelter__c);
+        }
+        if (shelterIds.isEmpty()) {
+            return;
+        }
+        
+        // 3a) zapytanie 1: total per shelter
+        Map<Id,Integer> totalMap = new Map<Id,Integer>();
+        for (AggregateResult ar : [
+            SELECT Shelter__c S, COUNT(Id) cnt
+            FROM Animal__c
+            WHERE Shelter__c IN :shelterIds
+            GROUP BY Shelter__c
+        ]) {
+            totalMap.put(
+                (Id)ar.get('S'),
+                (Integer)ar.get('cnt')
+            );
+        }
+        
+        // 3b) zapytanie 2: available+reserved per shelter
+        Map<Id,Integer> availMap = new Map<Id,Integer>();
+        for (AggregateResult ar : [
+            SELECT Shelter__c S, COUNT(Id) cnt
+            FROM Animal__c
+            WHERE Shelter__c IN :shelterIds
+              AND Status__c IN ('Available','Reserved')
+            GROUP BY Shelter__c
+        ]) {
+            availMap.put(
+                (Id)ar.get('S'),
+                (Integer)ar.get('cnt')
+            );
+        }
+        
+        // 4) przygotuj listę do update
+        List<Shelter__c> toUpdate = new List<Shelter__c>();
+        for (Shelter__c sch : [
+            SELECT Id, UnadoptedAnimals__c
+            FROM Shelter__c
+            WHERE Id IN :shelterIds
+        ]) {
+            Integer total  = totalMap.containsKey(sch.Id) ? totalMap.get(sch.Id) : 0;
+            Integer avail  = availMap.containsKey(sch.Id) ? availMap.get(sch.Id) : 0;
+            Integer newVal = total - avail;
+            
+            if (sch.UnadoptedAnimals__c == null 
+                || sch.UnadoptedAnimals__c != newVal) {
+                toUpdate.add(new Shelter__c(
+                    Id = sch.Id,
+                    UnadoptedAnimals__c = newVal
+                ));
+            }
+        }
+        
+        // 5) wykonaj DML
+        if (!toUpdate.isEmpty()) {
+            update toUpdate;
+        }
+    }
 }
