@@ -16,7 +16,7 @@ public class MissingAnimalsService {
         }
     }
     
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<MissingAnimal> getMissingAnimals(Integer dayDelta) {
         String token = MissingAnimalsAuthService.getAccessToken();
         
@@ -84,26 +84,26 @@ public class MissingAnimalsService {
     }
 
     public class AnimalDetails {
-        @AuraEnabled public String name;
-        @AuraEnabled public String imageUrl;
-        @AuraEnabled public String breed;
-        @AuraEnabled public Integer age;
-        @AuraEnabled public String uniqueFeatures;
-        @AuraEnabled public String size;
+        @AuraEnabled public String name { get; set; }
+        @AuraEnabled public String imageUrl { get; set; }
+        @AuraEnabled public String breed { get; set; }
+        @AuraEnabled public Integer age { get; set; }
+        @AuraEnabled public String uniqueFeatures { get; set; }
+        @AuraEnabled public String size { get; set; }
     }
 
     public class MissingAnimalReport {
-        @AuraEnabled public String address;
-        @AuraEnabled public Decimal disappearancePlaceLongitude;
-        @AuraEnabled public Decimal disappearancePlaceLatitude;
-        @AuraEnabled public String disappearanceDate;
-        @AuraEnabled public String description;
+        @AuraEnabled public String address { get; set; }
+        @AuraEnabled public Decimal disappearancePlaceLongitude { get; set; }
+        @AuraEnabled public Decimal disappearancePlaceLatitude { get; set; }
+        @AuraEnabled public String disappearanceDate { get; set; }
+        @AuraEnabled public String description { get; set; }
     }
 
 
     public class MissingAnimalWrapper {
-        @AuraEnabled public MissingAnimalReport report;
-        @AuraEnabled public AnimalDetails animal;
+        @AuraEnabled public AnimalDetails animal { get; set; }
+        @AuraEnabled public MissingAnimalReport report { get; set; }
     }
 
   	private static final String SUCCESS = 'Success';
@@ -122,7 +122,7 @@ public class MissingAnimalsService {
         if (token == null) {
             return ERROR_AUTH;
         }
-        
+
         if (missingAnimalWrapper?.report == null) {
             return ERROR_MISSING_DATA;
         }
