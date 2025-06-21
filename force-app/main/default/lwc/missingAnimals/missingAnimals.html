@@ -1,0 +1,220 @@
+<template>
+    <div class="slds-card slds-p-around_large">
+        <h1 class="slds-text-heading_large slds-m-bottom_large missing-animals-header">Missing Animals</h1>
+
+        <div class="slds-m-bottom_medium">
+            <div class="slds-grid slds-gutters slds-grid_vertical-align-end">
+                <div class="slds-col slds-size_2-of-6">
+                    <lightning-input
+                        type="number"
+                        label="Days to search"
+                        value={dayDelta}
+                        onchange={handleDayDeltaChange}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_2-of-6 new-report">
+                    <lightning-button
+                        variant="brand"
+                        label="Report Missing Animal"
+                        onclick={handleCreateNew}
+                        icon-name="utility:add">
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+
+        <template if:true={hasAnimals}>
+            <div class="slds-grid slds-wrap slds-gutters">
+                <template for:each={formattedAnimals} for:item="animal">
+                    <div key={animal.id} class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                        <div class="slds-card animal-card slds-m-vertical_small">
+                            <div class="animal-image-container">
+                                <template if:true={animal.imageUrl}>
+                                    <img src={animal.imageUrl} alt={animal.name} class="animal-image"/>
+                                </template>
+                                <template if:false={animal.imageUrl}>
+                                <div class="animal-image-placeholder">
+                                   <img src={defaultImage} alt="No photo" class="animal-image-placeholder"/>
+                                </div>
+                            </template>
+                            </div>
+                            <div class="slds-p-around_small slds-text-align_center">
+                                <h3 class="slds-text-heading_small slds-m-bottom_small slds-text-color_default">{animal.name}</h3>
+                                <p class="slds-text-body_small slds-m-bottom_small slds-text-color_weak">
+                                    Disappearance Date: {animal.formattedDate}
+                                </p>
+                                <div class="slds-button-group slds-m-top_small">
+                                    <lightning-button 
+                                        variant="success" 
+                                        label="Mark as found" 
+                                        data-id={animal.id}
+                                        onclick={handleMarkAsFound}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={showForm}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Report Missing Animal</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-1">
+                                <h3 class="slds-text-heading_small slds-m-bottom_medium">Animal Information</h3>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input
+                                    type="text"
+                                    label="Animal Name"
+                                    name="name"
+                                    value={formData.name}
+                                    onchange={handleFormFieldChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input
+                                    type="text"
+                                    label="Breed"
+                                    name="breed"
+                                    value={formData.breed}
+                                    onchange={handleFormFieldChange}>
+                                </lightning-input>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input
+                                    type="number"
+                                    label="Age"
+                                    name="age"
+                                    value={formData.age}
+                                    onchange={handleFormFieldChange}>
+                                </lightning-input>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input
+                                    type="text"
+                                    label="Size"
+                                    name="size"
+                                    value={formData.size}
+                                    onchange={handleFormFieldChange}>
+                                </lightning-input>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1">
+                                <lightning-textarea
+                                    label="Unique Features"
+                                    name="uniqueFeatures"
+                                    value={formData.uniqueFeatures}
+                                    onchange={handleFormFieldChange}>
+                                </lightning-textarea>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1">
+                                <lightning-input
+                                    type="url"
+                                    label="Image URL"
+                                    name="imageUrl"
+                                    value={formData.imageUrl}
+                                    onchange={handleFormFieldChange}>
+                                </lightning-input>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1 slds-m-top_large">
+                                <h3 class="slds-text-heading_small slds-m-bottom_medium">Disappearance Information</h3>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1">
+                                <lightning-input
+                                    type="date"
+                                    label="Disappearance Date"
+                                    name="disappearanceDate"
+                                    value={formData.disappearanceDate}
+                                    onchange={handleFormFieldChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1">
+                                <lightning-textarea
+                                    label="Description"
+                                    name="description"
+                                    value={formData.description}
+                                    onchange={handleFormFieldChange}
+                                    required>
+                                </lightning-textarea>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1">
+                                <lightning-input
+                                    type="text"
+                                    label="Address"
+                                    name="address"
+                                    value={formData.address}
+                                    onchange={handleFormFieldChange}>
+                                </lightning-input>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input
+                                    type="number"
+                                    label="Longitude"
+                                    name="disappearancePlaceLongitude"
+                                    value={formData.disappearancePlaceLongitude}
+                                    onchange={handleFormFieldChange}
+                                    step="any">
+                                </lightning-input>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input
+                                    type="number"
+                                    label="Latitude"
+                                    name="disappearancePlaceLatitude"
+                                    value={formData.disappearancePlaceLatitude}
+                                    onchange={handleFormFieldChange}
+                                    step="any">
+                                </lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button
+                            variant="neutral"
+                            label="Cancel"
+                            onclick={handleFormCancel}>
+                        </lightning-button>
+                        <lightning-button class="slds-m-left_small"
+                            variant="brand"
+                            label="Submit Report"
+                            onclick={handleFormSubmit}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:false={hasAnimals}>
+            <template if:false={isLoading}>
+                <div class="slds-text-align_center slds-m-vertical_large">
+                    <p>No missing animals found in the selected period.</p>
+                </div>
+            </template>
+        </template>
+    </div>
+</template>
