@@ -302,7 +302,6 @@
             <useReportChart>false</useReportChart>
         </components>
     </rightSection>
-    <runningUser>pgumiela@cw.inn</runningUser>
     <textColor>#000000</textColor>
     <title>Adoption Dashboard</title>
     <titleColor>#000099</titleColor>
