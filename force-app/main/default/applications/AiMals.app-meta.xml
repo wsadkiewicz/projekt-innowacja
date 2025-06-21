@@ -52,7 +52,8 @@
     </profileActionOverrides>
     <tabs>Adoption__c</tabs>
     <tabs>Animal__c</tabs>
-    <tabs>AI_MalsAppPage</tabs>
+    <tabs>Animal_Finder</tabs>
+    <tabs>Missing_Animals</tabs>
     <tabs>Shelter__c</tabs>
     <tabs>standard-Account</tabs>
     <tabs>Opening_Hours__c</tabs>

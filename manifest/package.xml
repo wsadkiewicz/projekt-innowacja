@@ -42,6 +42,8 @@
         <members>Animal__c</members>
         <members>Shelter__c</members>
         <members>Opening_Hours__c</members>
+        <members>Animal_Finder</members>
+        <members>Missing_Animals</members>
         <name>CustomTab</name>
     </types>
     <types>
@@ -51,6 +53,8 @@
         <members>Animal_Record_Page</members>
         <members>Shelter_Record_Page</members>
         <members>Opening_Hours_Record_Page</members>
+        <members>Animal_Finder</members>
+        <members>Missing_Animals</members>
         <name>FlexiPage</name>
     </types>
     <types>
@@ -79,6 +83,8 @@
         <members>Adoption_Record_Page_Virtual</members>
         <members>Animal_Record_Page</members>
         <members>Shelter_Record_Page</members>
+        <members>Animal_Finder</members>
+        <members>Missing_Animals</members>
         <name>UiViewDefinition</name>
     </types>
     <types>
