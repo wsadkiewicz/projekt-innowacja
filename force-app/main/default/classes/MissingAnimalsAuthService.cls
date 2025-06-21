@@ -1,6 +1,18 @@
 public class MissingAnimalsAuthService {
 
-    public static Map<String, Object> getAuthData() {
+    public class AuthData {
+        public String access_token;
+        public String instance_url;
+        
+        public AuthData() {}
+        
+        public AuthData(String access_token, String instance_url) {
+            this.access_token = access_token;
+            this.instance_url = instance_url;
+        }
+    }
+
+    public static AuthData getAuthData() {
         MissingAnimalsAuth__c authSettings = MissingAnimalsAuth__c.getInstance();
         
         if (authSettings == null) return null;
@@ -31,7 +43,11 @@ public class MissingAnimalsAuthService {
             HttpResponse response = http.send(request);
             
             if (response.getStatusCode() == 200) {
-                return (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+               AuthData authData = (AuthData) JSON.deserialize(
+                    response.getBody(),
+                    AuthData.class
+                    );
+                    return authData;
             } else {
                 return null;
             }
@@ -41,17 +57,17 @@ public class MissingAnimalsAuthService {
     }
 
     public static String getAccessToken() {
-        Map<String, Object> authData = MissingAnimalsAuthService.getAuthData();
+        AuthData authData = getAuthData();
         if (authData != null) {
-            return (String) authData.get('access_token');
+            return authData.access_token;
         }
         return null;
     }
 
     public static String getInstanceUrl() {
-        Map<String, Object> authData = MissingAnimalsAuthService.getAuthData();
+        AuthData authData = getAuthData();
         if (authData != null) {
-            return (String) authData.get('instance_url');
+            return authData.instance_url;
         }
         return null;
     }
