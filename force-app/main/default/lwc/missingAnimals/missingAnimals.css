@@ -5,6 +5,8 @@
 
 .new-report {
     margin-bottom: 3px;
+    margin-left: auto;
+    flex: none;
 }
 
 .animal-card {
@@ -20,4 +22,15 @@
     object-fit: cover;
     object-position: center;
     border-radius: 10px 10px 0px 0px;
+}
+
+.animal-name {
+    font-weight: 600;
+    font-size: large;
+    letter-spacing: 1px;
+    color: #222;
+}
+
+.animal-info {
+    font-size: small;
 }
