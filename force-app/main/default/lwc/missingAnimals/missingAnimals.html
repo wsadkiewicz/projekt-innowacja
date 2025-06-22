@@ -2,24 +2,22 @@
     <div class="slds-card slds-p-around_large">
         <h1 class="slds-text-heading_large slds-m-bottom_large missing-animals-header">Missing Animals</h1>
 
-        <div class="slds-m-bottom_medium">
-            <div class="slds-grid slds-gutters slds-grid_vertical-align-end">
-                <div class="slds-col slds-size_2-of-6">
-                    <lightning-input
-                        type="number"
-                        label="Days to search"
-                        value={dayDelta}
-                        onchange={handleDayDeltaChange}>
-                    </lightning-input>
-                </div>
-                <div class="slds-col slds-size_2-of-6 new-report">
-                    <lightning-button
-                        variant="brand"
-                        label="Report Missing Animal"
-                        onclick={handleCreateNew}
-                        icon-name="utility:add">
-                    </lightning-button>
-                </div>
+        <div class="slds-grid slds-gutters slds-grid_vertical-align-end slds-m-bottom_medium">
+            <div class="slds-col slds-size_2-of-6">
+                <lightning-input
+                    type="number"
+                    label="Days to search"
+                    value={dayDelta}
+                    onchange={handleDayDeltaChange}>
+                </lightning-input>
+            </div>
+            <div class="new-report slds-col">
+                <lightning-button
+                    variant="brand"
+                    label="Report Missing Animal"
+                    onclick={handleCreateNew}
+                    icon-name="utility:add">
+                </lightning-button>
             </div>
         </div>
 
@@ -43,8 +41,8 @@
                             </template>
                             </div>
                             <div class="slds-p-around_small slds-text-align_center">
-                                <h3 class="slds-text-heading_small slds-m-bottom_small slds-text-color_default">{animal.name}</h3>
-                                <p class="slds-text-body_small slds-m-bottom_small slds-text-color_weak">
+                                <h3 class="animal-name slds-text-heading_small">{animal.name}</h3>
+                                <p class="animal-info slds-text-body_small slds-m-bottom_small slds-text-color_weak">
                                     Disappearance Date: {animal.formattedDate}
                                 </p>
                                 <div class="slds-button-group slds-m-top_small">
