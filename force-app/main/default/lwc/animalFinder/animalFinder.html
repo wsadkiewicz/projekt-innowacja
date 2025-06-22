@@ -83,25 +83,32 @@
             <template for:each={animals} for:item="animal">
                 <div key={animal.Id} class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
                     <div class="slds-card animal-card slds-m-vertical_small" 
-                            data-id={animal.Id}>
-                        <div class="animal-image-container">
-                            <template if:true={animal.Photo_Link__c}>
-                                <img src={animal.Photo_Link__c} 
-                                        alt={animal.Name}
-                                        class="animal-image"/>
-                            </template>
-                            <template if:false={animal.Photo_Link__c}>
-                                <div class="animal-image-placeholder">
-                                   <img src={defaultImage} alt="No photo" class="animal-image-placeholder"/>
-                                </div>
-                            </template>
-                        </div>
+                        data-id={animal.Id}>
+                        <template if:true={animal.Photo_Link__c}>
+                            <img src={animal.Photo_Link__c} 
+                                    alt={animal.Name}
+                                    class="animal-image"/>
+                        </template>
+                        <template if:false={animal.Photo_Link__c}>
+                            <div class="animal-image-placeholder">
+                                <img src={defaultImage} alt="No photo" class="animal-image-placeholder"/>
+                            </div>
+                        </template>
                         <div class="slds-p-around_small slds-text-align_center">
-                            <h3 class="slds-text-heading_small slds-text-color_default">
+                            <h3 class="animal-name slds-text-heading_small slds-text-color_default">
                                 {animal.Name}
-                                <lightning-icon icon-name="utility:info" size="x-small" class="slds-m-left_x-small info-hover" data-id={animal.Id} onclick={handleAnimalClick}></lightning-icon>
+                                <svg class="custom-icon slds-m-left_x-small" 
+                                    data-id={animal.Id} 
+                                    onclick={handleAnimalClick} 
+                                    width="16" 
+                                    height="16" 
+                                    viewBox="0 0 27 27" 
+                                    fill="none" 
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d={iconPath} fill="#555555"/>
+                                </svg>
                             </h3>
-                            <p class="slds-text-body_small slds-text-color_weak">
+                            <p class="animal-info slds-text-body_small slds-text-color_weak">
                                 {animal.Breed__c}<br/>
                                 {animal.Age__c} • {animal.Sex__c}<br/>
                                 {animal.Shelter__r.Name}
